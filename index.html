@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+<meta name="theme-color" content="#0F3D3E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TWC MedCRM">
+<title>TWC MedCRM — Healthcare CRM Platform</title>
+<link rel="icon" type="image/png" href="https://z-cdn-media.chatglm.cn/files/b294a7ca-ad32-4be0-a147-19aa28af5078.png?auth_key=1889621395-f649c186eee949069893bf2995acc1fe-0-15a8bdc6fd0ed2cba61685baf2f94a5a">
+<link rel="apple-touch-icon" href="https://z-cdn-media.chatglm.cn/files/b294a7ca-ad32-4be0-a147-19aa28af5078.png?auth_key=1889621395-f649c186eee949069893bf2995acc1fe-0-15a8bdc6fd0ed2cba61685baf2f94a5a">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script>
+tailwind.config = { theme: { extend: {
+  colors: {
+    brand: { DEFAULT:'#14B8A6', 50:'#F0FDFA', 100:'#CCFBF1', 200:'#99F6E4', 300:'#5EEAD4', 400:'#2DD4BF', 500:'#14B8A6', 600:'#0D9488', 700:'#0F766E', 800:'#115E59', 900:'#0F3D3E' },
+    accent: { DEFAULT:'#F97362', 50:'#FFF4F2', 100:'#FFE4E0', 500:'#F97362', 600:'#E2493B' },
+    cream: { DEFAULT:'#F7F4ED', 100:'#FBF9F3', 200:'#EFEAE0' },
+    ink: { DEFAULT:'#0F1B1B', soft:'#4A5856', muted:'#7A8785' },
+    line: '#E5DFD2'
+  },
+  fontFamily: { display:['"Plus Jakarta Sans"','sans-serif'], sans:['"DM Sans"','sans-serif'] }
+}}}
+</script>
+<style>
+:root{ --bg:#F7F4ED; --ink:#0F1B1B; --brand:#14B8A6; --brand-deep:#0F3D3E; --accent:#F97362; --line:#E5DFD2; }
+*{ -webkit-tap-highlight-color:transparent; }
+html,body{ height:100%; margin:0; }
+body{ font-family:'DM Sans',system-ui,sans-serif; background:var(--bg); color:var(--ink); overflow:hidden; }
+.font-display{ font-family:'Plus Jakarta Sans',sans-serif; letter-spacing:-0.02em; }
+::-webkit-scrollbar{ width:8px; height:8px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#cdc6b6; border-radius:8px; }
+
+/* SPLASH */
+#splash{ position:fixed; inset:0; z-index:9999; background:radial-gradient(circle at 30% 20%,#1a5a5a 0%,#0F3D3E 40%,#07292a 100%); display:flex; align-items:center; justify-content:center; flex-direction:column; transition:opacity .5s,visibility .5s; }
+#splash.hide{ opacity:0; visibility:hidden; pointer-events:none; }
+.splash-logo{ width:80px; height:80px; border-radius:20px; background:rgba(255,255,255,0.06); border:1.5px solid rgba(255,255,255,0.18); display:flex; align-items:center; justify-content:center; animation:pulse 2.4s ease-in-out infinite; }
+@keyframes pulse{ 0%,100%{ transform:scale(1); box-shadow:0 0 0 0 rgba(20,184,166,0.4); } 50%{ transform:scale(1.04); box-shadow:0 0 0 16px rgba(20,184,166,0); } }
+.splash-bar{ width:200px; height:3px; margin-top:20px; background:rgba(255,255,255,0.1); border-radius:4px; overflow:hidden; }
+.splash-bar::after{ content:''; display:block; height:100%; width:40%; background:linear-gradient(90deg,transparent,#14B8A6,transparent); animation:load 1.2s ease-in-out infinite; }
+@keyframes load{ 0%{ transform:translateX(-100%); } 100%{ transform:translateX(350%); } }
+
+/* SIDEBAR */
+.sidebar{ background:linear-gradient(180deg,#0F3D3E 0%,#0a2e2f 100%); color:rgba(255,255,255,0.85); }
+.nav-item{ display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:10px; font-size:14px; font-weight:500; color:rgba(255,255,255,0.7); cursor:pointer; transition:all .18s; position:relative; }
+.nav-item i{ width:18px; text-align:center; font-size:14px; }
+.nav-item:hover{ background:rgba(255,255,255,0.06); color:#fff; }
+.nav-item.active{ background:linear-gradient(90deg,rgba(20,184,166,0.18),rgba(20,184,166,0.02)); color:#fff; }
+.nav-item.active::before{ content:''; position:absolute; left:0; top:8px; bottom:8px; width:3px; background:#14B8A6; border-radius:3px; }
+.nav-section-label{ font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.35); padding:14px 14px 6px; }
+
+/* CARDS */
+.card{ background:#fff; border:1px solid var(--line); border-radius:16px; box-shadow:0 1px 2px rgba(15,59,62,0.04),0 8px 24px -14px rgba(15,59,62,0.08); transition:transform .25s,box-shadow .25s,border-color .25s; }
+.card-interactive{ cursor:pointer; }
+.card-interactive:hover{ transform:translateY(-3px); border-color:#99F6E4; box-shadow:0 12px 32px -10px rgba(15,59,62,0.18); }
+.stat-pill{ display:inline-flex; align-items:center; gap:6px; padding:3px 9px; border-radius:999px; font-size:11px; font-weight:600; }
+
+/* BUTTONS */
+.btn{ display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:8px 14px; border-radius:10px; font-size:13px; font-weight:600; transition:all .18s; cursor:pointer; border:1px solid transparent; white-space:nowrap; }
+.btn:active{ transform:scale(0.96); }
+.btn-primary{ background:#0F3D3E; color:#fff; }
+.btn-primary:hover{ background:#0a2e2f; }
+.btn-ghost{ background:transparent; color:var(--ink); border-color:var(--line); }
+.btn-ghost:hover{ background:#fff; border-color:#99F6E4; }
+.btn-whatsapp{ background:#25D366; color:#fff; }
+.btn-whatsapp:hover{ background:#1fb855; }
+.btn-accent{ background:var(--accent); color:#fff; }
+
+/* CHIPS */
+.chip{ display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border-radius:999px; font-size:12px; font-weight:500; background:#fff; border:1px solid var(--line); cursor:pointer; transition:all .15s; }
+.chip:hover{ border-color:#99F6E4; }
+.chip.active{ background:#0F3D3E; color:#fff; border-color:#0F3D3E; }
+
+/* ===== DROPDOWN — FIXED POSITIONING ===== */
+.dropdown-wrap{ position:relative; }
+.dropdown-menu{
+  position:absolute; top:calc(100% + 6px); right:0;
+  background:#fff; border:1px solid var(--line); border-radius:14px;
+  box-shadow:0 16px 48px -8px rgba(15,59,62,0.28);
+  z-index:500; min-width:220px; max-width:320px; padding:6px;
+  opacity:0; visibility:hidden; transform:translateY(-4px) scale(0.98); transition:all .18s;
+  max-height:70vh; overflow-y:auto;
+}
+.dropdown-menu.open{ opacity:1; visibility:visible; transform:translateY(0) scale(1); }
+.dropdown-item{ display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; transition:background .12s; }
+.dropdown-item:hover{ background:#F7F4ED; }
+.dropdown-item i{ width:18px; text-align:center; color:var(--ink-soft); font-size:13px; }
+
+/* FIX: Mobile dropdown — full-width fixed panel below header */
+@media (max-width:768px){
+  .dropdown-menu{
+    position:fixed !important;
+    left:8px !important;
+    right:8px !important;
+    top:60px !important;
+    min-width:auto !important;
+    max-width:none !important;
+    width:auto !important;
+  }
+}
+
+/* MODAL */
+.modal-backdrop{ position:fixed; inset:0; z-index:800; background:rgba(7,41,42,0.55); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; padding:16px; opacity:0; visibility:hidden; transition:opacity .25s,visibility .25s; }
+.modal-backdrop.open{ opacity:1; visibility:visible; }
+.modal-panel{ background:#fff; border-radius:18px; max-width:920px; width:100%; max-height:92vh; overflow:hidden; display:flex; flex-direction:column; transform:scale(0.96) translateY(10px); transition:transform .3s cubic-bezier(0.2,0.9,0.3,1); }
+.modal-backdrop.open .modal-panel{ transform:scale(1) translateY(0); }
+
+/* TOAST */
+.toast{ position:fixed; bottom:24px; right:24px; z-index:900; background:#0F3D3E; color:#fff; padding:12px 18px; border-radius:12px; box-shadow:0 12px 32px -8px rgba(15,59,62,0.3); display:flex; align-items:center; gap:10px; font-size:13px; font-weight:500; transform:translateY(20px); opacity:0; transition:all .25s; }
+.toast.show{ transform:translateY(0); opacity:1; }
+
+/* LIVE DOT */
+.live-dot{ width:8px; height:8px; border-radius:50%; background:#16A34A; box-shadow:0 0 0 0 rgba(22,163,74,0.7); animation:livepulse 2s infinite; }
+@keyframes livepulse{ 0%{ box-shadow:0 0 0 0 rgba(22,163,74,0.6); } 70%{ box-shadow:0 0 0 8px rgba(22,163,74,0); } 100%{ box-shadow:0 0 0 0 rgba(22,163,74,0); } }
+
+/* VIEW TRANSITION */
+.view-enter{ animation:viewIn 0.35s ease both; }
+@keyframes viewIn{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:translateY(0); } }
+
+/* MINI APP */
+.mini-app{ background:linear-gradient(135deg,#fff,#fbf9f3); border:1px solid var(--line); border-radius:14px; padding:16px; cursor:pointer; transition:all 0.25s; position:relative; overflow:hidden; }
+.mini-app:hover{ transform:translateY(-3px); border-color:#99F6E4; box-shadow:0 12px 24px -10px rgba(15,59,62,0.15); }
+
+/* AVATAR */
+.avatar{ display:inline-flex; align-items:center; justify-content:center; border-radius:50%; font-weight:700; color:#fff; flex-shrink:0; }
+
+/* TOGGLE */
+.toggle{ position:relative; width:36px; height:20px; background:#d6d2c8; border-radius:999px; cursor:pointer; transition:background 0.2s; }
+.toggle::after{ content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; background:#fff; border-radius:50%; transition:transform 0.2s; box-shadow:0 2px 4px rgba(0,0,0,0.15); }
+.toggle.on{ background:#14B8A6; }
+.toggle.on::after{ transform:translateX(16px); }
+
+/* MOBILE SIDEBAR */
+@media (max-width:1024px){
+  .sidebar{ position:fixed; top:0; bottom:0; left:0; width:260px; transform:translateX(-100%); transition:transform 0.25s; z-index:700; }
+  .sidebar.open{ transform:translateX(0); }
+  .sidebar-backdrop{ position:fixed; inset:0; background:rgba(7,41,42,0.55); z-index:650; opacity:0; visibility:hidden; transition:opacity 0.25s,visibility 0.25s; }
+  .sidebar-backdrop.open{ opacity:1; visibility:visible; }
+}
+
+/* INPUTS */
+.search-input{ width:100%; background:#fff; border:1px solid var(--line); border-radius:10px; padding:8px 12px 8px 34px; font-size:12px; transition:border-color 0.15s; }
+.search-input:focus{ outline:none; border-color:#14B8A6; }
+.form-input{ width:100%; background:#fff; border:1px solid var(--line); border-radius:10px; padding:9px 12px; font-size:13px; transition:border-color 0.15s; }
+.form-input:focus{ outline:none; border-color:#14B8A6; box-shadow:0 0 0 3px rgba(20,184,166,0.1); }
+.form-label{ display:block; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-muted); margin-bottom:5px; }
+
+/* HERO */
+.hero-bg{ background:linear-gradient(135deg,#0F3D3E 0%,#0a3435 50%,#115E59 100%); position:relative; overflow:hidden; }
+.hero-bg::before{ content:''; position:absolute; top:-50%; right:-10%; width:60%; height:200%; background:radial-gradient(circle,rgba(20,184,166,0.25),transparent 60%); pointer-events:none; }
+.hero-bg::after{ content:''; position:absolute; bottom:-50%; left:-10%; width:40%; height:150%; background:radial-gradient(circle,rgba(249,115,98,0.18),transparent 60%); pointer-events:none; }
+
+/* TABS */
+.tab-pill{ padding:8px 14px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.15s; color:var(--ink-soft); }
+.tab-pill:hover{ background:#fff; color:var(--ink); }
+.tab-pill.active{ background:#0F3D3E; color:#fff; }
+
+/* PROGRESS */
+.progress-bar{ height:6px; background:#efeae0; border-radius:4px; overflow:hidden; }
+.progress-bar > div{ height:100%; border-radius:4px; transition:width 0.5s; }
+
+/* TIMELINE */
+.timeline-item{ position:relative; padding-left:32px; padding-bottom:20px; }
+.timeline-item::before{ content:''; position:absolute; left:11px; top:24px; bottom:0; width:2px; background:var(--line); }
+.timeline-item:last-child::before{ display:none; }
+.timeline-dot{ position:absolute; left:4px; top:4px; width:16px; height:16px; border-radius:50%; background:#fff; border:2px solid var(--brand); display:flex; align-items:center; justify-content:center; }
+
+/* KANBAN */
+.kanban-col{ background:rgba(255,255,255,0.6); border:1px solid var(--line); border-radius:14px; display:flex; flex-direction:column; min-width:280px; flex-shrink:0; }
+.kanban-card{ background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px; margin-bottom:10px; cursor:pointer; transition:all 0.2s; border-left:3px solid transparent; }
+.kanban-card:hover{ border-color:#99F6E4; transform:translateY(-2px); }
+
+/* FUNNEL */
+.funnel-stage{ position:relative; padding:14px 16px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; transition:all 0.25s; cursor:pointer; }
+.funnel-stage:hover{ transform:translateX(4px); }
+
+/* STEP INDICATOR */
+.step-dot{ width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; background:#EFEAE0; color:var(--ink-muted); transition:all 0.2s; flex-shrink:0; }
+.step-dot.active{ background:#0F3D3E; color:#fff; }
+.step-dot.done{ background:#14B8A6; color:#fff; }
+.step-line{ flex:1; height:2px; background:#EFEAE0; border-radius:2px; }
+.step-line.done{ background:#14B8A6; }
+
+/* UPLOAD */
+.upload-zone{ border:2px dashed #cdc6b6; border-radius:14px; padding:32px 20px; text-align:center; cursor:pointer; transition:all 0.2s; background:#FBF9F3; }
+.upload-zone:hover{ border-color:#14B8A6; background:#F0FDFA; }
+
+/* RULE BUILDER */
+.rule-block{ border:1px solid var(--line); border-radius:12px; padding:14px; position:relative; background:#FBF9F3; }
+.rule-block.trigger{ border-left:4px solid #f59e0b; }
+.rule-block.condition{ border-left:4px solid #6366f1; }
+.rule-block.action{ border-left:4px solid #14B8A6; }
+
+/* ROLE BADGES */
+.role-badge-super{ background:linear-gradient(90deg,#F97362,#E2493B); color:#fff; }
+.role-badge-admin{ background:linear-gradient(90deg,#14B8A6,#0D9488); color:#fff; }
+.role-badge-associate{ background:#EFEAE0; color:#4A5856; }
+
+.scroll-area{ overflow-y:auto; scrollbar-width:thin; }
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-logo">
+    <img src="https://z-cdn-media.chatglm.cn/files/b294a7ca-ad32-4be0-a147-19aa28af5078.png?auth_key=1889621395-f649c186eee949069893bf2995acc1fe-0-15a8bdc6fd0ed2cba61685baf2f94a5a" alt="TWC Labs" class="w-11 h-11 object-contain">
+  </div>
+  <div class="text-white font-display font-bold text-xl mt-4 tracking-tight">TWC MedCRM</div>
+  <div class="text-white/50 text-xs mt-1 font-medium">Healthcare CRM · Powered by Google Workspace</div>
+  <div class="splash-bar"></div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app" class="flex h-screen overflow-hidden">
+
+  <!-- SIDEBAR BACKDROP -->
+  <div id="sidebarBackdrop" class="sidebar-backdrop lg:hidden"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar w-[260px] flex-shrink-0 flex flex-col" id="sidebar">
+    <div class="px-5 py-5 flex items-center gap-3 border-b border-white/5">
+      <div class="w-10 h-10 rounded-xl bg-white/8 border border-white/15 flex items-center justify-center">
+        <img src="https://z-cdn-media.chatglm.cn/files/b294a7ca-ad32-4be0-a147-19aa28af5078.png?auth_key=1889621395-f649c186eee949069893bf2995acc1fe-0-15a8bdc6fd0ed2cba61685baf2f94a5a" alt="TWC" class="w-6 h-6 object-contain">
+      </div>
+      <div>
+        <div class="font-display font-bold text-white text-base leading-tight">TWC MedCRM</div>
+        <div class="text-[10px] text-white/50 font-medium uppercase tracking-wider">Healthcare Edition</div>
+      </div>
+    </div>
+    <div class="px-3 pt-3">
+      <button class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg bg-white/5 hover:bg-white/10 transition text-left" onclick="openSettings()">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-md bg-brand-500 flex items-center justify-center text-xs font-bold text-white" id="workspaceInitials">LH</div>
+          <div>
+            <div class="text-white text-xs font-semibold" id="workspaceName">Lagos Health Network</div>
+            <div class="text-white/40 text-[10px]">Workspace · 24 members</div>
+          </div>
+        </div>
+        <i class="fas fa-chevron-down text-white/40 text-[10px]"></i>
+      </button>
+    </div>
+    <nav class="flex-1 overflow-y-auto px-3 py-3 scroll-area">
+      <div class="nav-section-label">Main</div>
+      <div class="nav-item active" data-view="dashboard"><i class="fas fa-gauge-high"></i> Dashboard</div>
+      <div class="nav-item" data-view="contacts"><i class="fas fa-user-injured"></i> Contacts <span class="ml-auto text-[10px] bg-white/10 px-1.5 py-0.5 rounded">248</span></div>
+      <div class="nav-item" data-view="pipeline"><i class="fas fa-diagram-project"></i> Sales Pipeline</div>
+      <div class="nav-item" data-view="activities"><i class="fas fa-list-check"></i> Activities</div>
+      <div class="nav-item" data-view="referrals"><i class="fas fa-hand-holding-medical"></i> Referrals</div>
+      <div class="nav-section-label">Engage</div>
+      <div class="nav-item" data-view="campaigns"><i class="fas fa-bullhorn"></i> Campaigns</div>
+      <div class="nav-item" data-view="whatsapp"><i class="fas fa-comment-medical"></i> WhatsApp <span class="ml-auto live-dot"></span></div>
+      <div class="nav-item" data-view="tickets"><i class="fas fa-ticket"></i> Tickets <span class="ml-auto text-[10px] bg-accent text-white px-1.5 py-0.5 rounded">7</span></div>
+      <div class="nav-item" data-view="templates"><i class="fas fa-file-lines"></i> Templates</div>
+      <div class="nav-section-label">System</div>
+      <div class="nav-item" data-view="automation"><i class="fas fa-robot"></i> Automation</div>
+      <div class="nav-item" data-view="team"><i class="fas fa-people-group"></i> Team</div>
+      <div class="nav-item" data-view="compliance"><i class="fas fa-shield-heart"></i> NDPA Compliance</div>
+      <div class="nav-item" data-view="integrations"><i class="fas fa-plug"></i> Integrations</div>
+    </nav>
+    <div class="px-3 pb-4 pt-3 border-t border-white/5">
+      <div class="bg-white/5 rounded-xl p-3 mb-2">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-1.5"><i class="fas fa-database text-brand-400 text-[10px]"></i><span class="text-white/70 text-[11px] font-semibold">Storage</span></div>
+          <span class="text-white/40 text-[10px]">Google Drive</span>
+        </div>
+        <div class="progress-bar bg-white/10"><div style="width:42%;background:#14B8A6;"></div></div>
+        <div class="text-white/40 text-[10px] mt-1.5">4.2 GB of 15 GB used</div>
+      </div>
+      <div class="flex items-center gap-2 px-1">
+        <div class="avatar w-8 h-8 bg-gradient-to-br from-brand-400 to-brand-700 text-[11px]">AO</div>
+        <div class="flex-1 min-w-0">
+          <div class="text-white text-xs font-semibold truncate">Dr. Amara Okafor</div>
+          <div class="text-white/40 text-[10px] truncate">Super Admin · Cardiology</div>
+        </div>
+        <button onclick="openSettings()" class="text-white/40 hover:text-white transition"><i class="fas fa-gear text-xs"></i></button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="flex-1 flex flex-col min-w-0">
+
+    <!-- ===== TOP BAR — ALL BUTTONS WIRED UP ===== -->
+    <header class="bg-cream-100/90 backdrop-blur-md border-b border-line flex items-center px-3 lg:px-5 gap-2 flex-shrink-0" style="height:56px; overflow:visible; position:relative; z-index:30;">
+      <button class="lg:hidden btn btn-ghost p-2" onclick="toggleSidebar()" aria-label="Menu"><i class="fas fa-bars text-sm"></i></button>
+
+      <!-- SEARCH — FUNCTIONAL -->
+      <div class="relative flex-1 max-w-xs lg:max-w-sm">
+        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted text-[11px]"></i>
+        <input type="text" class="search-input" placeholder="Search patients, deals..." id="globalSearch" oninput="handleSearch(this.value)" onfocus="document.getElementById('searchResults').classList.add('open')" onblur="setTimeout(()=>document.getElementById('searchResults').classList.remove('open'),200)">
+        <div id="searchResults" class="dropdown-menu" style="min-width:100%; max-width:400px; left:0; right:auto;">
+          <div id="searchResultsContent" class="py-1">
+            <div class="px-3 py-2 text-[10px] text-ink-muted">Type to search contacts, deals, tickets...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-1.5 ml-auto">
+
+        <!-- FILTER DROPDOWN -->
+        <div class="dropdown-wrap">
+          <button id="filterBtn" class="btn btn-ghost py-2 px-2.5 text-xs">
+            <i class="fas fa-filter text-[10px]"></i>
+            <span class="hidden lg:inline">Filter:</span>
+            <strong class="text-brand-deep" id="filterLabel">All</strong>
+            <i class="fas fa-chevron-down text-[8px]"></i>
+          </button>
+          <div id="filterDropdown" class="dropdown-menu" style="min-width:260px;">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-ink-muted px-3 py-2">Filter dashboard by associate</div>
+            <div class="dropdown-item" data-filter="all" style="background:#F0FDFA;">
+              <div class="avatar w-7 h-7 bg-gradient-to-br from-brand-400 to-accent text-[10px]">ALL</div>
+              <div class="flex-1"><div class="text-xs font-semibold">All Associates</div><div class="text-[10px] text-ink-muted">Full team view</div></div>
+              <i class="fas fa-check text-brand-deep text-xs" id="filterCheck-all"></i>
+            </div>
+            <div id="filterOptions"></div>
+          </div>
+        </div>
+
+        <!-- QUICK ADD DROPDOWN -->
+        <div class="dropdown-wrap">
+          <button id="quickAddBtn" class="btn btn-primary py-2 px-2.5 text-xs">
+            <i class="fas fa-plus text-[10px]"></i>
+            <span class="hidden sm:inline">Quick Add</span>
+            <i class="fas fa-chevron-down text-[8px] hidden sm:inline"></i>
+          </button>
+          <div id="quickAddDropdown" class="dropdown-menu" style="min-width:250px;">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-ink-muted px-3 py-2">Create New</div>
+            <div class="dropdown-item" data-action="openQuickAdd"><i class="fas fa-user-plus"></i><div><div>New Contact</div><div class="text-[10px] text-ink-muted">Patient, referrer or company</div></div></div>
+            <div class="dropdown-item" data-action="openLogActivity"><i class="fas fa-list-check"></i><div><div>Log Activity</div><div class="text-[10px] text-ink-muted">Call, WhatsApp, meeting</div></div></div>
+            <div class="dropdown-item" data-action="openNewDeal"><i class="fas fa-handshake"></i><div><div>New Deal</div><div class="text-[10px] text-ink-muted">Add to sales pipeline</div></div></div>
+            <div class="dropdown-item" data-action="openNewTicket"><i class="fas fa-ticket"></i><div><div>New Ticket</div><div class="text-[10px] text-ink-muted">Support request</div></div></div>
+            <div class="dropdown-item" data-action="openNewCampaign"><i class="fas fa-bullhorn"></i><div><div>New Campaign</div><div class="text-[10px] text-ink-muted">WhatsApp / email broadcast</div></div></div>
+            <div class="dropdown-item" data-action="openWhatsAppComposer"><i class="fab fa-whatsapp text-green-500"></i><div><div>WhatsApp Broadcast</div><div class="text-[10px] text-ink-muted">Send to segment</div></div></div>
+            <div class="dropdown-item" data-action="openReferralForm"><i class="fas fa-hand-holding-medical"></i><div><div>Log Referral</div><div class="text-[10px] text-ink-muted">From external doctor</div></div></div>
+            <div class="dropdown-item" data-action="openNewTemplate"><i class="fas fa-file-lines"></i><div><div>New Template</div><div class="text-[10px] text-ink-muted">Message template</div></div></div>
+            <div class="dropdown-item" data-action="openNewRule"><i class="fas fa-robot"></i><div><div>Automation Rule</div><div class="text-[10px] text-ink-muted">Trigger → Action</div></div></div>
+            <div class="dropdown-item" data-action="openCreateTeam"><i class="fas fa-people-group"></i><div><div>Create Team</div><div class="text-[10px] text-ink-muted">New specialty team</div></div></div>
+          </div>
+        </div>
+
+        <!-- WHATSAPP ADD — FUNCTIONAL -->
+        <button class="btn btn-whatsapp p-2" onclick="openWhatsAppAddNumber()" title="Add WhatsApp Number">
+          <i class="fab fa-whatsapp text-sm"></i>
+        </button>
+
+        <!-- NOTIFICATIONS — NOW FUNCTIONAL -->
+        <div class="dropdown-wrap">
+          <button id="notifBtn" class="relative btn btn-ghost p-2" title="Notifications">
+            <i class="fas fa-bell text-sm"></i>
+            <span class="absolute top-1 right-1 w-2 h-2 bg-accent rounded-full"></span>
+          </button>
+          <div id="notifDropdown" class="dropdown-menu" style="min-width:300px;">
+            <div class="flex items-center justify-between px-3 py-2 border-b border-line">
+              <span class="font-semibold text-sm">Notifications</span>
+              <span class="stat-pill bg-accent text-white">4 new</span>
+            </div>
+            <div id="notifContent"></div>
+            <div class="px-3 py-2 border-t border-line">
+              <button class="btn btn-ghost w-full text-xs py-1.5" onclick="closeAllDropdowns(); showToast('All notifications marked as read','check-circle')">Mark all as read</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- AVATAR — NOW FUNCTIONAL -->
+        <button class="avatar w-8 h-8 bg-gradient-to-br from-brand-400 to-brand-700 text-[11px] cursor-pointer hover:ring-2 hover:ring-brand-300 transition" onclick="openSettings()" title="Profile & Settings">AO</button>
+      </div>
+    </header>
+
+    <!-- VIEW CONTAINER -->
+    <div id="viewContainer" class="flex-1 overflow-y-auto scroll-area"></div>
+  </main>
+</div>
+
+<!-- MODAL -->
+<div id="modalRoot" class="modal-backdrop">
+  <div class="modal-panel" id="modalPanel"></div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast"><i class="fas fa-check-circle"></i> <span id="toastText">Saved</span></div>
+
+<script>
+const APP_ICON='https://z-cdn-media.chatglm.cn/files/b294a7ca-ad32-4be0-a147-19aa28af5078.png?auth_key=1889621395-f649c186eee949069893bf2995acc1fe-0-15a8bdc6fd0ed2cba61685baf2f94a5a';
+(function(){const m={name:'TWC MedCRM',short_name:'TWC MedCRM',start_url:'.',display:'standalone',background_color:'#0F3D3E',theme_color:'#0F3D3E',icons:[{src:APP_ICON,sizes:'192x192',type:'image/png',purpose:'any maskable'},{src:APP_ICON,sizes:'512x512',type:'image/png',purpose:'any maskable'}]};const b=new Blob([JSON.stringify(m)],{type:'application/json'});const l=document.createElement('link');l.rel='manifest';l.href=URL.createObjectURL(b);document.head.appendChild(l);})();
+
+/* ===== DATA ===== */
+const ROLES=[
+  {id:'super_admin',name:'Super Admin',level:3,badgeClass:'role-badge-super',icon:'crown',desc:'Full system control including settings, integrations, compliance, and team management.',perms:['Full access to all modules','Team & member management','Workspace settings','Integrations configuration','NDPA compliance controls','Automation rule management','Data export & deletion (RTBF)','Audit log access','Create & manage teams','Assign roles to members']},
+  {id:'admin',name:'Admin',level:2,badgeClass:'role-badge-admin',icon:'shield-halved',desc:'Team management and day-to-day operations across modules.',perms:['View all team members','Contacts & pipeline management','Campaigns & templates','Automation rules (view only)','Activities logging','WhatsApp & tickets','Reports & analytics','Referral management','Create contacts & deals','Cannot change system settings']},
+  {id:'associate',name:'Associate',level:1,badgeClass:'role-badge-associate',icon:'user',desc:'Standard operational access for sales, marketing, and customer service staff.',perms:['Own contacts & pipeline','Log activities','WhatsApp (assigned chats)','Tickets (assigned only)','Templates (view & use)','View own dashboard','Create referrals','Cannot manage team members','Cannot configure integrations']}
+];
+const TEAMS=[
+  {id:'t1',name:'Cardiology Team',specialty:'Cardiology',category:'Private',lead:'u1',members:1,patients:52,deals:5,dealsValue:7050000},
+  {id:'t2',name:'Oncology Team',specialty:'Oncology',category:'Private',lead:'u2',members:1,patients:38,deals:3,dealsValue:6350000},
+  {id:'t3',name:'Orthopedics Team',specialty:'Orthopedics',category:'HMO',lead:'u3',members:1,patients:29,deals:2,dealsValue:920000},
+  {id:'t4',name:'Neurology Team',specialty:'Neurology',category:'Corporate',lead:'u4',members:1,patients:41,deals:3,dealsValue:5300000},
+  {id:'t5',name:'Pediatrics Team',specialty:'Pediatrics',category:'Referral',lead:'u5',members:1,patients:34,deals:2,dealsValue:0}
+];
+const ASSOCIATES=[
+  {id:'u1',name:'Dr. Amara Okafor',role:'Sales Lead',roleId:'super_admin',team:'t1',specialty:'Cardiology',avatar:'AO',color:'from-teal-400 to-teal-700'},
+  {id:'u2',name:'Tunde Bello',role:'Marketing',roleId:'admin',team:'t2',specialty:'Oncology',avatar:'TB',color:'from-orange-400 to-rose-600'},
+  {id:'u3',name:'Fatima Ibrahim',role:'Customer Service',roleId:'admin',team:'t3',specialty:'Orthopedics',avatar:'FI',color:'from-purple-400 to-indigo-600'},
+  {id:'u4',name:'Chinedu Eze',role:'Sales',roleId:'associate',team:'t4',specialty:'Neurology',avatar:'CE',color:'from-sky-400 to-blue-700'},
+  {id:'u5',name:'Grace Adeniyi',role:'Sales',roleId:'associate',team:'t5',specialty:'Pediatrics',avatar:'GA',color:'from-pink-400 to-rose-600'}
+];
+const PATIENTS=[
+  {id:'p1',name:'Mrs. Funmilayo Ransome-Kuti',age:54,gender:'F',type:'Patient',stage:'Consultation',team:'Oncology',owner:'u2',phone:'+234 803 555 0142',email:'funmilayo.rk@gmail.com',channel:'WhatsApp',value:1850000,consent:true,hmo:'Hygeia HMO',tags:['High-value','Post-op'],nextAction:'Chemotherapy planning call',nextDate:'2025-01-18'},
+  {id:'p2',name:'Mr. Ibrahim Abubakar',age:47,gender:'M',type:'Patient',stage:'Proposal',team:'Orthopedics',owner:'u3',phone:'+234 805 444 8821',email:'i.abubakar@yahoo.com',channel:'Phone Call',value:920000,consent:true,hmo:'AXA Mansard',tags:['Surgery'],nextAction:'Send quote',nextDate:'2025-01-16'},
+  {id:'p3',name:'Mrs. Aisha Mohammed',age:38,gender:'F',type:'Patient',stage:'Qualified',team:'Cardiology',owner:'u1',phone:'+234 701 222 7790',email:'aisha.m@outlook.com',channel:'Web Form',value:540000,consent:true,hmo:'Self-pay',tags:['New'],nextAction:'Book consultation',nextDate:'2025-01-15'},
+  {id:'p4',name:'Mr. Okonkwo Chukwuemeka',age:6,gender:'M',type:'Patient',stage:'Lead',team:'Pediatrics',owner:'u5',phone:'+234 809 111 0033',email:'okonkwo.fam@gmail.com',channel:'WhatsApp',value:0,consent:false,hmo:'Reliance HMO',tags:['Guardian'],nextAction:'Send info',nextDate:'2025-01-14'},
+  {id:'p5',name:'Dr. Adebayo Williams',age:51,gender:'M',type:'Referrer',stage:'—',team:'Cardiology',owner:'u1',phone:'+234 802 999 4471',email:'bwilliams@luth.org.ng',channel:'Hospital Network',value:0,consent:true,hmo:'—',tags:['Consultant'],nextAction:'Quarterly review',nextDate:'2025-02-01'},
+  {id:'p6',name:'Reddington Hospital',type:'Company',stage:'Proposal',team:'Cardiology',owner:'u1',phone:'+234 700 733 3483',email:'partnerships@reddington.org',channel:'Direct',value:12000000,consent:true,hmo:'—',tags:['Corporate','VIP'],nextAction:'Sign SLA',nextDate:'2025-01-20'},
+  {id:'p7',name:'Eko Hospitals',type:'Company',stage:'Qualified',team:'Oncology',owner:'u2',phone:'+234 700 355 6422',email:'contact@ekohospitals.com',channel:'Referral',value:4500000,consent:true,hmo:'—',tags:['Corporate'],nextAction:'Site visit',nextDate:'2025-01-17'},
+  {id:'p8',name:'Mr. Daniel Okafor',age:42,gender:'M',type:'Patient',stage:'Won',team:'Neurology',owner:'u4',phone:'+234 806 333 2200',email:'danielokafor@gmail.com',channel:'WhatsApp',value:2100000,consent:true,hmo:'Avon HMO',tags:['Post-op'],nextAction:'Post-op check',nextDate:'2025-01-22'}
+];
+const PIPELINE_STAGES=[
+  {id:'lead',name:'Lead',color:'#94a3b8',desc:'New inquiry'},
+  {id:'qualified',name:'Qualified',color:'#0ea5e9',desc:'Need verified'},
+  {id:'consultation',name:'Consultation',color:'#f59e0b',desc:'In consultation'},
+  {id:'proposal',name:'Proposal',color:'#a855f7',desc:'Quote shared'},
+  {id:'won',name:'Won',color:'#16a34a',desc:'Closed-won'}
+];
+const PIPELINE_DEALS=[
+  {id:'d1',patient:'Mrs. Funmilayo Ransome-Kuti',stage:'consultation',value:1850000,owner:'u2',team:'Oncology',days:4,priority:'High',nextAction:'Chemo planning'},
+  {id:'d2',patient:'Mr. Ibrahim Abubakar',stage:'proposal',value:920000,owner:'u3',team:'Orthopedics',days:2,priority:'Medium',nextAction:'Send quote'},
+  {id:'d3',patient:'Mrs. Aisha Mohammed',stage:'qualified',value:540000,owner:'u1',team:'Cardiology',days:1,priority:'Medium',nextAction:'Book consultation'},
+  {id:'d4',patient:'Mr. Okonkwo Chukwuemeka',stage:'lead',value:0,owner:'u5',team:'Pediatrics',days:0,priority:'Low',nextAction:'Send info'},
+  {id:'d5',patient:'Reddington Hospital',stage:'proposal',value:12000000,owner:'u1',team:'Cardiology',days:6,priority:'High',nextAction:'Sign SLA'},
+  {id:'d6',patient:'Eko Hospitals',stage:'qualified',value:4500000,owner:'u2',team:'Oncology',days:3,priority:'High',nextAction:'Site visit'},
+  {id:'d7',patient:'Mr. Daniel Okafor',stage:'won',value:2100000,owner:'u4',team:'Neurology',days:8,priority:'Medium',nextAction:'Post-op check'},
+  {id:'d8',patient:'Mrs. Bisi Olawale',stage:'lead',value:0,owner:'u1',team:'Cardiology',days:1,priority:'Low',nextAction:'Outreach'},
+  {id:'d9',patient:'Dr. Ngozi Eze Clinic',stage:'consultation',value:3200000,owner:'u4',team:'Neurology',days:5,priority:'High',nextAction:'Network proposal'}
+];
+const ACTIVITIES=[
+  {id:'a1',type:'call',title:'Follow-up call to Mrs. Funmilayo',patient:'Mrs. Funmilayo Ransome-Kuti',owner:'u2',time:'2025-01-13 14:32',duration:'12 min',outcome:'Discussed chemo schedule',status:'completed'},
+  {id:'a2',type:'whatsapp',title:'Sent post-op care instructions',patient:'Mr. Daniel Okafor',owner:'u4',time:'2025-01-13 11:08',outcome:'Message delivered',status:'completed'},
+  {id:'a3',type:'meeting',title:'Cardiology consult — Aisha',patient:'Mrs. Aisha Mohammed',owner:'u1',time:'2025-01-13 09:00',duration:'30 min',outcome:'Recommended angiogram',status:'completed'},
+  {id:'a4',type:'email',title:'Proposal sent to Reddington',patient:'Reddington Hospital',owner:'u1',time:'2025-01-12 16:45',outcome:'Awaiting response',status:'completed'},
+  {id:'a5',type:'task',title:'Prepare paediatric brochure',patient:'Mr. Okonkwo',owner:'u5',time:'2025-01-14 10:00',outcome:'Pending',status:'upcoming'},
+  {id:'a6',type:'referral',title:'Referral from Dr. Williams',patient:'Mr. Tunde Alabi',owner:'u1',time:'2025-01-12 13:20',outcome:'New lead created',status:'completed'},
+  {id:'a7',type:'whatsapp',title:'Birthday greeting sent',patient:'Mrs. Bisi Olawale',owner:'u1',time:'2025-01-12 08:00',outcome:'Auto-automation',status:'completed'},
+  {id:'a8',type:'call',title:'Pre-op consult reminder',patient:'Mr. Ibrahim Abubakar',owner:'u3',time:'2025-01-14 15:00',outcome:'Scheduled',status:'upcoming'}
+];
+const REFERRALS=[
+  {id:'r1',source:'Dr. Adebayo Williams',sourceOrg:'LUTH',patient:'Mr. Tunde Alabi',service:'Cardiology',owner:'u1',status:'Converted',value:1200000,date:'2025-01-12',reciprocated:true},
+  {id:'r2',source:'Dr. Ngozi Eze',sourceOrg:'Eko Hospitals',patient:'Mrs. Bisi Olawale',service:'Neurology',owner:'u4',status:'In Progress',value:0,date:'2025-01-10',reciprocated:false},
+  {id:'r3',source:'Reddington Hospital',sourceOrg:'Reddington',patient:'Mrs. Halima Sani',service:'Oncology',owner:'u2',status:'Converted',value:2400000,date:'2025-01-08',reciprocated:true},
+  {id:'r4',source:'Dr. Yetunde Olawale',sourceOrg:'Private Clinic',patient:'Master Chuka Obi',service:'Pediatrics',owner:'u5',status:'New',value:0,date:'2025-01-13',reciprocated:false},
+  {id:'r5',source:'St. Nicholas Hospital',sourceOrg:'St. Nicholas',patient:'Mr. Bola Ade',service:'Orthopedics',owner:'u3',status:'In Progress',value:920000,date:'2025-01-09',reciprocated:false}
+];
+const CAMPAIGNS=[
+  {id:'c1',name:'World Heart Day Screening',channel:'WhatsApp + Email',team:'Cardiology',owner:'u1',status:'Active',reach:1240,conversions:87,budget:450000,spent:312000,startDate:'2025-01-01',endDate:'2025-02-14'},
+  {id:'c2',name:'Free Mammogram October',channel:'WhatsApp Broadcast',team:'Oncology',owner:'u2',status:'Active',reach:890,conversions:42,budget:800000,spent:540000,startDate:'2025-01-05',endDate:'2025-02-05'},
+  {id:'c3',name:'Pediatric Vaccination Drive',channel:'SMS + Forms',team:'Pediatrics',owner:'u5',status:'Draft',reach:0,conversions:0,budget:200000,spent:0,startDate:'2025-02-01',endDate:'2025-03-01'},
+  {id:'c4',name:'Orthopedic Surgery Awareness',channel:'Email Newsletter',team:'Orthopedics',owner:'u3',status:'Completed',reach:2100,conversions:120,budget:350000,spent:348000,startDate:'2024-12-01',endDate:'2024-12-31'}
+];
+const TICKETS=[
+  {id:'t1',subject:'Appointment reschedule request',patient:'Mrs. Funmilayo',priority:'High',status:'Open',owner:'u3',channel:'WhatsApp',created:'2025-01-13 08:14',sla:'2h remaining'},
+  {id:'t2',subject:'Billing dispute — Invoice #4521',patient:'Mr. Daniel Okafor',priority:'Medium',status:'In Progress',owner:'u3',channel:'Email',created:'2025-01-12 16:30',sla:'6h remaining'},
+  {id:'t3',subject:'Request for medical records',patient:'Eko Hospitals',priority:'Medium',status:'Open',owner:'u2',channel:'Portal',created:'2025-01-13 10:00',sla:'22h remaining'},
+  {id:'t4',subject:'Post-treatment side effect',patient:'Mrs. Aisha Mohammed',priority:'Urgent',status:'Escalated',owner:'u1',channel:'WhatsApp',created:'2025-01-13 11:42',sla:'Overdue 1h'},
+  {id:'t5',subject:'Insurance pre-auth query',patient:'Mr. Ibrahim Abubakar',priority:'Medium',status:'Open',owner:'u3',channel:'Phone',created:'2025-01-13 13:05',sla:'18h remaining'},
+  {id:'t6',subject:'Feedback on cardiology',patient:'Mr. Bola Ade',priority:'Low',status:'Resolved',owner:'u1',channel:'Email',created:'2025-01-10 14:00',sla:'Closed'},
+  {id:'t7',subject:'Wait time complaint',patient:'Master Chuka Obi',priority:'High',status:'Open',owner:'u5',channel:'WhatsApp',created:'2025-01-13 15:20',sla:'4h remaining'}
+];
+const TEMPLATES=[
+  {id:'tpl1',name:'Welcome — New Patient',category:'Onboarding',channel:'WhatsApp',uses:142,lastUsed:'2025-01-13',body:'Hello {{name}}, welcome to {{hospital}}. Your care coordinator {{associate}} will reach out shortly.'},
+  {id:'tpl2',name:'Appointment Confirmation',category:'Scheduling',channel:'WhatsApp',uses:318,lastUsed:'2025-01-13',
+:'Hi {{name}}, your appointment with Dr. {{doctor}} is confirmed for {{date}} at {{time}}.'},
+  {id:'tpl3',name:'Payment Reminder',category:'Billing',channel:'WhatsApp',uses:89,lastUsed:'2025-01-12',body:'Dear {{name}}, your invoice of ₦{{amount}} is due on {{date}}.'},
+  {id:'tpl4',name:'Post-Op Care',category:'Care',channel:'WhatsApp',uses:67,lastUsed:'2025-01-13',body:'Hi {{name}}, follow these post-op instructions: {{instructions}}.'},
+  {id:'tpl5',name:'Birthday Greeting',category:'Engagement',channel:'WhatsApp',uses:24,lastUsed:'2025-01-12',body:'Happy Birthday {{name}}! From all of us at {{hospital}}.'},
+  {id:'tpl6',name:'Referral Thank You',category:'Referrals',channel:'Email',uses:31,lastUsed:'2025-01-11',body:'Dear Dr. {{doctor}}, thank you for referring {{patient}}.'},
+  {id:'tpl7',name:'Heart Screening',category:'Campaign',channel:'WhatsApp',uses:1240,lastUsed:'2025-01-13',body:'February is Heart Month. Get a cardiac screening at 40% off. Book: {{link}}'}
+];
+const AUTOMATIONS=[
+  {id:'auto1',name:'Welcome new lead',trigger:'New contact created',action:'Send WhatsApp welcome + assign round-robin',status:'active',runs:142,lastRun:'2025-01-13 14:32'},
+  {id:'auto2',name:'3-day follow-up',trigger:'After consultation +3 days',action:'Create task + send WhatsApp reminder',status:'active',runs:87,lastRun:'2025-01-13 09:00'},
+  {id:'auto3',name:'Ticket escalation',trigger:'Ticket open > 24h',action:'Escalate to team lead + email alert',status:'active',runs:12,lastRun:'2025-01-12 16:00'},
+  {id:'auto4',name:'Birthday greeting',trigger:'Patient DOB == today',action:'Send WhatsApp template + log activity',status:'active',runs:24,lastRun:'2025-01-12 08:00'},
+  {id:'auto5',name:'Won deal — invoice',trigger:'Deal moved to Won',action:'Generate invoice in Sheets + send via WhatsApp',status:'active',runs:38,lastRun:'2025-01-11 14:20'},
+  {id:'auto6',name:'Referral thank-you',trigger:'New referral logged',action:'Send email to referrer + log to sheet',status:'active',runs:18,lastRun:'2025-01-12 13:20'},
+  {id:'auto7',name:'Quarterly review',trigger:'Quarterly schedule',action:'Create task for account managers',status:'paused',runs:4,lastRun:'2024-12-31 10:00'}
+];
+const WHATSAPP_CHATS=[
+  {id:'w1',name:'Mrs. Funmilayo Ransome-Kuti',last:'Thank you doctor',time:'14:32',unread:2,owner:'u2'},
+  {id:'w2',name:'Mr. Daniel Okafor',last:'Received instructions',time:'11:08',unread:0,owner:'u4'},
+  {id:'w3',name:'Dr. Adebayo Williams',last:'New referral for cardiology',time:'10:45',unread:1,owner:'u1'},
+  {id:'w4',name:'Reddington Partnerships',last:'Send the SLA document',time:'09:30',unread:0,owner:'u1'},
+  {id:'w5',name:'Mrs. Aisha Mohammed',last:'Appointment time?',time:'Yesterday',unread:0,owner:'u1'},
+  {id:'w6',name:'Mr. Ibrahim Abubakar',last:'Need to reschedule',time:'Yesterday',unread:3,owner:'u3'}
+];
+const FUNNEL_DATA=[
+  {stage:'Leads',count:48,value:8400000,color:'#94a3b8'},
+  {stage:'Qualified',count:32,value:12600000,color:'#0ea5e9'},
+  {stage:'Consultation',count:18,value:9800000,color:'#f59e0b'},
+  {stage:'Proposal',count:11,value:19200000,color:'#a855f7'},
+  {stage:'Won',count:8,value:7400000,color:'#16a34a'}
+];
+const INTEGRATIONS=[
+  {id:'sheets',name:'Google Sheets',desc:'Live data sync',connected:true,icon:'fa-table',color:'green'},
+  {id:'drive',name:'Google Drive',desc:'4.2GB / 15GB',connected:true,icon:'fa-folder',color:'green'},
+  {id:'forms',name:'Google Forms',desc:'12 active forms',connected:true,icon:'fa-file-circle-question',color:'green'},
+  {id:'script',name:'Google Apps Script',desc:'7 automations',connected:true,icon:'fa-code',color:'green'},
+  {id:'whatsapp',name:'WhatsApp Business API',desc:'Via Wati',connected:true,icon:'fab fa-whatsapp',color:'green'},
+  {id:'gmail',name:'Gmail',desc:'Transactional email',connected:true,icon:'fa-envelope',color:'green'},
+  {id:'calendar',name:'Google Calendar',desc:'Appointment sync',connected:true,icon:'fa-calendar',color:'green'},
+  {id:'looker',name:'Looker Studio',desc:'Analytics',connected:true,icon:'fa-chart-line',color:'green'},
+  {id:'twilio',name:'Twilio SMS',desc:'SMS gateway',connected:false,icon:'fa-comment-sms',color:'amber'},
+  {id:'stripe',name:'Stripe',desc:'Online payments',connected:false,icon:'fa-credit-card',color:'amber'},
+  {id:'paystack',name:'Paystack',desc:'Local NGN payments',connected:false,icon:'fa-money-bill-wave',color:'amber'},
+  {id:'meta',name:'Meta Lead Forms',desc:'Facebook/IG leads',connected:false,icon:'fab fa-meta',color:'amber'}
+];
+
+const NOTIFICATIONS=[
+  {id:'n1',icon:'ticket',color:'bg-accent',title:'Urgent ticket escalated',desc:'Post-treatment side effect — Mrs. Aisha Mohammed',time:'5m ago',unread:true},
+  {id:'n2',icon:'whatsapp',color:'bg-green-500',title:'New WhatsApp message',desc:'Mrs. Funmilayo Ransome-Kuti replied',time:'12m ago',unread:true},
+  {id:'n3',icon:'hand-holding-medical',color:'bg-brand-500',title:'New referral received',desc:'Dr. Yetunde Olawale referred Master Chuka Obi',time:'1h ago',unread:true},
+  {id:'n4',icon:'robot',color:'bg-indigo-500',title:'Automation ran',desc:'Birthday greeting sent to Mrs. Bisi Olawale',time:'2h ago',unread:true},
+  {id:'n5',icon:'envelope',color:'bg-sky-500',title:'Proposal sent',desc:'Reddington Hospital SLA document',time:'Yesterday',unread:false},
+  {id:'n6',icon:'check-circle',color:'bg-green-500',title:'Deal won',desc:'Mr. Daniel Okafor — ₦2,100,000',time:'Yesterday',unread:false}
+];
+
+/* ===== STATE ===== */
+const state={view:'dashboard',filter:'all',user:ASSOCIATES[0],hospitalName:'Lagos Health Network'};
+
+/* ===== HELPERS ===== */
+const $=(s,el=document)=>el.querySelector(s);
+const $$=(s,el=document)=>Array.from(el.querySelectorAll(s));
+const naira=n=>'₦'+(n||0).toLocaleString('en-NG',{maximumFractionDigits:0});
+const fmtDate=d=>new Date(d).toLocaleDateString('en-NG',{day:'numeric',month:'short',year:'numeric'});
+const associate=id=>ASSOCIATES.find(a=>a.id===id)||ASSOCIATES[0];
+const role=id=>ROLES.find(r=>r.id===id)||ROLES[2];
+const avatarHTML=(a,sz='w-8 h-8 text-[11px]')=>{const x=associate(a);return `<div class="avatar ${sz} bg-gradient-to-br ${x.color}">${x.avatar}</div>`;};
+const roleBadge=rid=>{const r=role(rid);return `<span class="stat-pill ${r.badgeClass}"><i class="fas fa-${r.icon} text-[8px]"></i> ${r.name}</span>`;};
+
+function showToast(msg='Saved',icon='check-circle'){
+  const t=$('#toast');$('#toastText').textContent=msg;
+  t.querySelector('i').className=`fas fa-${icon}`;
+  t.classList.add('show');
+  clearTimeout(t._tm);t._tm=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+/* ===== MODAL ===== */
+function openModal(html,maxW){
+  $('#modalPanel').style.maxWidth=maxW||'920px';
+  $('#modalPanel').innerHTML=html;
+  $('#modalRoot').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){ $('#modalRoot').classList.remove('open'); document.body.style.overflow=''; }
+ $('#modalRoot').addEventListener('click',e=>{ if(e.target.id==='modalRoot') closeModal(); });
+
+/* ===== DROPDOWN MANAGEMENT — ROBUST ===== */
+function closeAllDropdowns(){
+  $$('.dropdown-menu').forEach(d=>d.classList.remove('open'));
+}
+
+function setupDropdowns(){
+  // Helper to toggle a specific dropdown
+  function toggleDropdown(btnId, ddId){
+    const btn=$(btnId);
+    const dd=$(ddId);
+    if(!btn||!dd) return;
+    btn.addEventListener('click',e=>{
+      e.stopPropagation();
+      const isOpen=dd.classList.contains('open');
+      closeAllDropdowns();
+      if(!isOpen) dd.classList.add('open');
+    });
+  }
+
+  // Filter button
+  toggleDropdown('#filterBtn','#filterDropdown');
+
+  // Quick Add button
+  toggleDropdown('#quickAddBtn','#quickAddDropdown');
+
+  // Notification bell button
+  toggleDropdown('#notifBtn','#notifDropdown');
+
+  // Quick Add dropdown items — use event delegation
+  $('#quickAddDropdown').addEventListener('click',e=>{
+    const item=e.target.closest('.dropdown-item');
+    if(!item) return;
+    e.stopPropagation();
+    const action=item.dataset.action;
+    closeAllDropdowns();
+    if(action && typeof window[action]==='function'){
+      window[action]();
+    }
+  });
+
+  // Filter dropdown items
+  $('#filterDropdown').addEventListener('click',e=>{
+    const item=e.target.closest('.dropdown-item[data-filter]');
+    if(!item) return;
+    e.stopPropagation();
+    setFilter(item.dataset.filter);
+  });
+
+  // Outside click — close all dropdowns
+  document.addEventListener('click',e=>{
+    if(!e.target.closest('.dropdown-menu') && !e.target.closest('#filterBtn') && !e.target.closest('#quickAddBtn') && !e.target.closest('#notifBtn') && !e.target.closest('#globalSearch')){
+      closeAllDropdowns();
+    }
+  });
+
+  // Render notification content
+  renderNotifications();
+}
+
+/* ===== SEARCH — FUNCTIONAL ===== */
+function handleSearch(query){
+  const results=$('#searchResultsContent');
+  if(!query || query.trim().length<1){
+    results.innerHTML='<div class="px-3 py-2 text-[10px] text-ink-muted">Type to search contacts, deals, tickets...</div>';
+    return;
+  }
+  const q=query.toLowerCase();
+  const patientMatches=PATIENTS.filter(p=>p.name.toLowerCase().includes(q)||p.phone.includes(q)||p.email.toLowerCase().includes(q)).slice(0,4);
+  const dealMatches=PIPELINE_DEALS.filter(d=>d.patient.toLowerCase().includes(q)).slice(0,3);
+  const ticketMatches=TICKETS.filter(t=>t.subject.toLowerCase().includes(q)||t.patient.toLowerCase().includes(q)).slice(0,3);
+  let html='';
+  if(patientMatches.length){html+=`<div class="text-[9px] font-bold uppercase text-ink-muted px-3 pt-2 pb-1">Contacts</div>`;patientMatches.forEach(p=>{html+=`<div class="dropdown-item" onclick="closeAllDropdowns();openContact('${p.id}')">${avatarHTML(p.owner,'w-7 h-7 text-[10px]')}<div class="flex-1"><div class="text-xs font-semibold">${p.name}</div><div class="text-[10px] text-ink-muted">${p.type} · ${p.stage}</div></div></div>`;});}
+  if(dealMatches.length){html+=`<div class="text-[9px] font-bold uppercase text-ink-muted px-3 pt-2 pb-1">Deals</div>`;dealMatches.forEach(d=>{const st=PIPELINE_STAGES.find(s=>s.id===d.stage);html+=`<div class="dropdown-item" onclick="closeAllDropdowns();openDeal('${d.id}')"><div class="w-7 h-7 rounded-lg flex items-center justify-center text-white" style="background:${st.color}"><i class="fas fa-handshake text-[10px]"></i></div><div class="flex-1"><div class="text-xs font-semibold">${d.patient}</div><div class="text-[10px] text-ink-muted">${st.name} · ${naira(d.value)}</div></div></div>`;});}
+  if(ticketMatches.length){html+=`<div class="text-[9px] font-bold uppercase text-ink-muted px-3 pt-2 pb-1">Tickets</div>`;ticketMatches.forEach(t=>{html+=`<div class="dropdown-item" onclick="closeAllDropdowns();openTicket('${t.id}')"><div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center"><i class="fas fa-ticket text-[10px]"></i></div><div class="flex-1"><div class="text-xs font-semibold">${t.subject}</div><div class="text-[10px] text-ink-muted">${t.priority} · ${t.status}</div></div></div>`;});}
+  if(!html) html='<div class="px-3 py-3 text-[10px] text-ink-muted text-center">No results found</div>';
+  results.innerHTML=html;
+}
+
+/* ===== NOTIFICATIONS ===== */
+function renderNotifications(){
+  const c=$('#notifContent');
+  if(!c) return;
+  c.innerHTML=NOTIFICATIONS.map(n=>`
+    <div class="dropdown-item items-start" style="align-items:flex-start;">
+      <div class="w-8 h-8 rounded-lg ${n.color} text-white flex items-center justify-center flex-shrink-0"><i class="fas fa-${n.icon} text-[11px]"></i></div>
+      <div class="flex-1 min-w-0">
+        <div class="text-xs font-semibold ${n.unread?'text-ink':'text-ink-soft'}">${n.title}</div>
+        <div class="text-[10px] text-ink-muted truncate">${n.desc}</div>
+        <div class="text-[9px] text-ink-muted mt-0.5">${n.time}</div>
+      </div>
+      ${n.unread?'<div class="w-2 h-2 rounded-full bg-accent flex-shrink-0 mt-1"></div>':''}
+    </div>`).join('');
+}
+
+/* ===== FILTER ===== */
+function renderFilterOptions(){
+  const html=ASSOCIATES.map(a=>{
+    const r=role(a.roleId);
+    return `<div class="dropdown-item" data-filter="${a.id}">
+      <div class="avatar w-7 h-7 bg-gradient-to-br ${a.color} text-[10px]">${a.avatar}</div>
+      <div class="flex-1"><div class="text-xs font-semibold">${a.name}</div><div class="text-[10px] text-ink-muted">${a.role} · ${r.name}</div></div>
+      <i class="fas fa-check text-brand-deep text-xs filter-check hidden" id="filterCheck-${a.id}"></i>
+    </div>`;
+  }).join('');
+  $('#filterOptions').innerHTML=html;
+}
+
+function setFilter(id){
+  state.filter=id;
+  const label=id==='all'?'All':associate(id).name.split(' ')[0];
+  $('#filterLabel').textContent=label;
+  // Update check marks
+  $$('.filter-check, #filterCheck-all').forEach(c=>c.classList.add('hidden'));
+  const check=document.getElementById('filterCheck-'+id);
+  if(check) check.classList.remove('hidden');
+  if(id==='all') $('#filterCheck-all')?.classList.remove('hidden');
+  closeAllDropdowns();
+  // ALWAYS navigate to dashboard with filtered data
+  nav('dashboard');
+  const fullName=id==='all'?'All Associates':associate(id).name;
+  showToast(`Viewing ${fullName}'s dashboard`);
+}
+
+/* ===== FILTERED DATA ===== */
+function fPatients(){return state.filter==='all'?PATIENTS:PATIENTS.filter(p=>p.owner===state.filter);}
+function fDeals(){return state.filter==='all'?PIPELINE_DEALS:PIPELINE_DEALS.filter(d=>d.owner===state.filter);}
+function fActivities(){return state.filter==='all'?ACTIVITIES:ACTIVITIES.filter(a=>a.owner===state.filter);}
+function fReferrals(){return state.filter==='all'?REFERRALS:REFERRALS.filter(r=>r.owner===state.filter);}
+function fTickets(){return state.filter==='all'?TICKETS:TICKETS.filter(t=>t.owner===state.filter);}
+function fCampaigns(){return state.filter==='all'?CAMPAIGNS:CAMPAIGNS.filter(c=>c.owner===state.filter);}
+
+/* ===== VIEW RENDERER ===== */
+function renderView(){
+  const v=state.view;
+  const map={dashboard:viewDashboard,contacts:viewContacts,pipeline:viewPipeline,activities:viewActivities,referrals:viewReferrals,campaigns:viewCampaigns,whatsapp:viewWhatsApp,tickets:viewTickets,templates:viewTemplates,automation:viewAutomation,team:viewTeam,compliance:viewCompliance,integrations:viewIntegrations};
+  $('#viewContainer').innerHTML=`<div class="view-enter">${(map[v]||viewDashboard)()}</div>`;
+}
+
+/* ===== DASHBOARD ===== */
+function viewDashboard(){
+  const p=fPatients(),d=fDeals(),a=fActivities(),r=fReferrals(),t=fTickets(),c=fCampaigns();
+  const fl=state.filter==='all'?'Entire Team':associate(state.filter).name+"'s";
+  const pv=d.reduce((s,x)=>s+x.value,0);
+  const won=d.filter(x=>x.stage==='won').length;
+  const ot=t.filter(x=>x.status!=='Resolved').length;
+  const ar=new Set(r.map(x=>x.source)).size;
+  return `
+  <section class="hero-bg text-white px-5 lg:px-8 py-7 lg:py-9">
+    <div class="relative z-10 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5">
+      <div>
+        <div class="flex items-center gap-2 text-brand-100/80 text-xs font-semibold mb-2"><span class="live-dot"></span><span>${new Date().toLocaleDateString('en-NG',{weekday:'long',day:'numeric',month:'long'})} · Live</span></div>
+        <h1 class="font-display font-extrabold text-2xl lg:text-[34px] leading-tight">Welcome back, Dr. Amara</h1>
+        <p class="text-white/70 text-sm mt-1.5 max-w-xl">Viewing <strong class="text-white">${fl}</strong> dashboard · ${p.length} active contacts in your funnel today.</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button class="btn bg-white/10 hover:bg-white/15 text-white border border-white/15" onclick="openQuickAdd()"><i class="fas fa-plus text-[11px]"></i> New Contact</button>
+        <button class="btn bg-brand-500 hover:bg-brand-600 text-white" onclick="openWhatsAppComposer()"><i class="fab fa-whatsapp text-sm"></i> Broadcast</button>
+        <button class="btn bg-accent hover:bg-accent-600 text-white" onclick="nav('activities')"><i class="fas fa-bolt text-[11px]"></i> Log Activity</button>
+      </div>
+    </div>
+  </section>
+  <div class="p-5 lg:p-8 space-y-6 -mt-4 lg:-mt-6 relative z-10">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+      ${kpiCard('Active Contacts',p.length,'user-injured','brand','+12% this week','contacts')}
+      ${kpiCard('Pipeline Value',naira(pv),'sack-dollar','accent',`${won} deals won`,'pipeline')}
+      ${kpiCard('Open Tickets',ot,'ticket','warn','SLA at risk','tickets')}
+      ${kpiCard('Referral Partners',ar,'hand-holding-medical','success',`${r.length} referrals`,'referrals')}
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div class="card lg:col-span-2 p-5">
+        <div class="flex items-center justify-between mb-4"><div><h3 class="font-display font-bold text-base">Sales Funnel — Patient/Company Journey</h3><p class="text-xs text-ink-muted mt-0.5">Click any stage to drill into deals</p></div><button class="btn btn-ghost text-xs py-1.5 px-3" onclick="nav('pipeline')">View pipeline</button></div>
+        <div class="space-y-2">
+          ${FUNNEL_DATA.map((f,i)=>{const max=Math.max(...FUNNEL_DATA.map(x=>x.count));const w=f.count/max*100;const conv=i<FUNNEL_DATA.length-1?Math.round(FUNNEL_DATA[i+1].count/f.count*100):100;return `<div class="funnel-stage" style="background:linear-gradient(90deg,${f.color}14,${f.color}06);border-left:4px solid ${f.color}" onclick="nav('pipeline')"><div class="flex-1"><div class="flex items-center gap-2 mb-1"><span class="font-display font-bold text-sm" style="color:${f.color}">${f.stage}</span><span class="text-[10px] text-ink-muted">${f.count} records</span></div><div class="text-xs text-ink-soft">${naira(f.value)}</div></div><div class="flex items-center gap-3"><div class="text-right"><div class="text-[10px] text-ink-muted">Conv.</div><div class="text-sm font-bold">${conv}%</div></div><div class="w-20 lg:w-32 h-2 bg-cream-200 rounded-full overflow-hidden"><div style="width:${w}%;background:${f.color};height:100%;border-radius:999px"></div></div><i class="fas fa-chevron-right text-ink-muted text-[10px]"></i></div></div>`;}).join('')}
+        </div>
+      </div>
+      <div class="card p-5">
+        <div class="flex items-center justify-between mb-4"><div><h3 class="font-display font-bold text-base">Mini Apps</h3><p class="text-xs text-ink-muted mt-0.5">Quick healthcare workflows</p></div></div>
+        <div class="grid grid-cols-3 gap-2">
+          ${miniApp('Triage','clipboard-list','brand','openTriage()')}
+          ${miniApp('Vitals','heart-pulse','accent','openVitals()')}
+          ${miniApp('Rx','prescription-bottle-medical','warn','openPrescription()')}
+          ${miniApp('Lab','flask-vial','success','openLab()')}
+          ${miniApp('Insurance','shield-heart','brand','openInsurance()')}
+          ${miniApp('Surgery','syringe','accent','openSurgery()')}
+        </div>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div class="card lg:col-span-2 p-5">
+        <div class="flex items-center justify-between mb-4"><div><h3 class="font-display font-bold text-base">Recent Activities</h3><p class="text-xs text-ink-muted mt-0.5">Sales & service actions logged</p></div><button class="btn btn-ghost text-xs py-1.5 px-3" onclick="nav('activities')">All activities</button></div>
+        <div>${a.slice(0,5).map(x=>{const ic={call:'phone',whatsapp:'comment-dots',meeting:'users',email:'envelope',task:'list-check',referral:'hand-holding-medical'};const cl={call:'text-sky-600 bg-sky-50',whatsapp:'text-green-600 bg-green-50',meeting:'text-purple-600 bg-purple-50',email:'text-amber-600 bg-amber-50',task:'text-ink bg-cream-200',referral:'text-accent bg-accent-50'};const ass=associate(x.owner);return `<div class="timeline-item" onclick="openActivity('${x.id}')"><div class="timeline-dot"><i class="fas fa-${ic[x.type]||'circle'} text-[7px] text-brand-deep"></i></div><div class="flex items-start justify-between gap-3 cursor-pointer"><div class="flex-1 min-w-0"><div class="flex items-center gap-2 mb-1"><span class="text-xs font-semibold">${x.title}</span>${x.status==='upcoming'?'<span class="stat-pill bg-amber-100 text-amber-700">Upcoming</span>':''}</div><div class="text-xs text-ink-muted">${x.patient}</div><div class="text-[11px] text-ink-muted mt-1 flex items-center gap-2"><span><i class="fas fa-clock text-[9px]"></i> ${x.time.split(' ')[1]||x.time}</span>${x.duration?`<span><i class="fas fa-hourglass text-[9px]"></i> ${x.duration}</span>`:''}<span><i class="fas fa-user text-[9px]"></i> ${ass.name}</span></div></div><div class="text-right"><span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md ${cl[x.type]||'text-ink bg-cream-200'} text-[10px] font-semibold"><i class="fas fa-${ic[x.type]||'circle'} text-[9px]"></i> ${x.type}</span></div></div></div>`;}).join('')}</div>
+      </div>
+      <div class="space-y-4">
+        <div class="card p-5">
+          <div class="flex items-center justify-between mb-4"><div><h3 class="font-display font-bold text-base flex items-center gap-2"><i class="fab fa-whatsapp text-green-500"></i> WhatsApp</h3><p class="text-xs text-ink-muted mt-0.5">Live patient chats</p></div><span class="live-dot"></span></div>
+          <div class="space-y-2">${WHATSAPP_CHATS.slice(0,4).map(x=>`<div class="flex items-center gap-3 p-2 rounded-lg hover:bg-cream-100 cursor-pointer" onclick="openWhatsAppChat('${x.id}')">${avatarHTML(x.owner,'w-9 h-9 text-xs')}<div class="flex-1 min-w-0"><div class="flex items-center justify-between gap-2"><span class="text-xs font-semibold truncate">${x.name}</span><span class="text-[10px] text-ink-muted">${x.time}</span></div><div class="flex items-center justify-between gap-2"><span class="text-[11px] text-ink-muted truncate">${x.last}</span>${x.unread?`<span class="bg-green-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">${x.unread}</span>`:''}</div></div></div>`).join('')}</div>
+          <button class="btn btn-whatsapp w-full mt-3 text-xs py-2" onclick="nav('whatsapp')"><i class="fab fa-whatsapp text-sm"></i> Open Inbox</button>
+        </div>
+        <div class="card p-5">
+          <h3 class="font-display font-bold text-base mb-3">Team Performance</h3>
+          <div class="space-y-3">${ASSOCIATES.map(a=>{const deals=PIPELINE_DEALS.filter(d=>d.owner===a.id);const val=deals.reduce((s,d)=>s+d.value,0);return `<div class="flex items-center gap-3 cursor-pointer hover:bg-cream-100 -mx-2 px-2 py-1.5 rounded-lg" onclick="setFilter('${a.id}')">${avatarHTML(a.id,'w-8 h-8 text-[11px]')}<div class="flex-1 min-w-0"><div class="text-xs font-semibold truncate">${a.name}</div><div class="text-[10px] text-ink-muted">${a.role} · ${deals.length} deals</div></div><div class="text-right"><div class="text-xs font-bold text-brand-deep">${naira(val)}</div><div class="text-[10px] text-ink-muted">${deals.filter(d=>d.stage==='won').length} won</div></div></div>`;}).join('')}</div>
+        </div>
+      </div>
+    </div>
+    <div class="card p-5 bg-gradient-to-br from-brand-deep to-brand-700 text-white border-0">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="flex items-center gap-4"><div class="w-12 h-12 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center"><i class="fas fa-shield-heart text-xl text-brand-300"></i></div><div><div class="text-[10px] uppercase tracking-wider text-brand-200 font-bold mb-0.5">Nigeria Data Protection Act 2023</div><div class="font-display font-bold text-base">Compliance Status: Excellent</div><div class="text-xs text-white/70 mt-0.5">98% consent coverage · 0 breaches · Audit log active</div></div></div>
+        <div class="flex items-center gap-2"><button class="btn bg-white/10 hover:bg-white/15 text-white border border-white/15 text-xs" onclick="nav('compliance')">View Report</button><button class="btn bg-brand-500 hover:bg-brand-600 text-white text-xs" onclick="openConsentManager()">Consent Manager</button></div>
+      </div>
+    </div>
+  </div>`;
+}
+function kpiCard(label,value,icon,color,sub,target){const ib={brand:'bg-brand-500',accent:'bg-accent',warn:'bg-amber-500',success:'bg-green-500'};return `<div class="card card-interactive p-4 lg:p-5" onclick="nav('${target}')"><div class="flex items-start justify-between mb-3"><div class="w-10 h-10 rounded-xl ${ib[color]} flex items-center justify-center text-white"><i class="fas fa-${icon} text-sm"></i></div><i class="fas fa-arrow-up-right text-[10px] text-ink-muted"></i></div><div class="font-display font-extrabold text-xl lg:text-2xl text-ink leading-none">${value}</div><div class="text-xs text-ink-soft mt-1.5">${label}</div><div class="text-[10px] text-ink-muted mt-1">${sub}</div></div>`;}
+function miniApp(label,icon,color,fn){const cm={brand:'bg-brand-50 text-brand-deep',accent:'bg-accent-50 text-accent',warn:'bg-amber-50 text-amber-600',success:'bg-green-50 text-green-600'};return `<div class="mini-app" onclick="${fn}"><div class="w-9 h-9 rounded-lg ${cm[color]} flex items-center justify-center mb-2"><i class="fas fa-${icon} text-sm"></i></div><div class="text-[11px] font-semibold leading-tight">${label}</div></div>`;}
+
+/* ===== CONTACTS ===== */
+function viewContacts(){const p=fPatients();return `<div class="p-5 lg:p-8 space-y-5"><div class="flex flex-col md:flex-row md:items-center justify-between gap-3"><div><h1 class="font-display font-extrabold text-2xl">Contacts</h1><p class="text-sm text-ink-muted">Patients, referrers and corporate accounts · ${p.length} records</p></div><div class="flex gap-2"><button class="btn btn-ghost" onclick="openImportFromSheets()"><i class="fas fa-file-import text-[11px]"></i> Import from Sheets</button><button class="btn btn-primary" onclick="openQuickAdd()"><i class="fas fa-plus text-[11px]"></i> New Contact</button></div></div><div class="flex flex-wrap gap-2">${['All','Patients','Referrers','Companies','High-value','Active'].map((t,i)=>`<div class="chip ${i===0?'active':''}">${t}</div>`).join('')}</div><div class="card overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-cream-100 text-[10px] uppercase tracking-wider text-ink-muted"><tr><th class="text-left px-4 py-3 font-bold">Name</th><th class="text-left px-4 py-3 font-bold hidden md:table-cell">Type</th><th class="text-left px-4 py-3 font-bold hidden lg:table-cell">Stage</th><th class="text-right px-4 py-3 font-bold">Value</th><th class="text-center px-4 py-3 font-bold">NDPA</th></tr></thead><tbody>${p.map(x=>{const ass=associate(x.owner);const st=PIPELINE_STAGES.find(s=>s.name===x.stage)||{color:'#94a3b8'};return `<tr class="border-t border-line hover:bg-cream-100 cursor-pointer" onclick="openContact('${x.id}')"><td class="px-4 py-3"><div class="flex items-center gap-3">${avatarHTML(x.owner,'w-8 h-8 text-[11px]')}<div><div class="font-semibold text-xs">${x.name}</div><div class="text-[10px] text-ink-muted">${x.phone}</div></div></div></td><td class="px-4 py-3 hidden md:table-cell"><span class="stat-pill bg-cream-200 text-ink-soft">${x.type}</span></td><td class="px-4 py-3 hidden lg:table-cell"><span class="inline-flex items-center gap-1.5 text-xs"><span class="w-2 h-2 rounded-full" style="background:${st.color}"></span>${x.stage}</span></td><td class="px-4 py-3 text-right font-semibold text-xs">${x.value?naira(x.value):'—'}</td><td class="px-4 py-3 text-center">${x.consent?'<i class="fas fa-check-circle text-green-500 text-sm"></i>':'<i class="fas fa-circle-exclamation text-amber-500 text-sm"></i>'}</td></tr>`;}).join('')}</tbody></table></div></div></div>`;}
+
+/* ===== PIPELINE ===== */
+function viewPipeline(){const d=fDeals();return `<div class="p-5 lg:p-8 space-y-5"><div class="flex flex-col md:flex-row md:items-center justify-between gap-3"><div><h1 class="font-display font-extrabold text-2xl">Sales Pipeline</h1><p class="text-sm text-ink-muted">Patient & company journey · ${d.length} active deals</p></div><button class="btn btn-primary" onclick="openNewDeal()"><i class="fas fa-plus text-[11px]"></i> New Deal</button></div><div class="flex gap-3 overflow-x-auto pb-3">${PIPELINE_STAGES.map(s=>{const sd=d.filter(x=>x.stage===s.id);const val=sd.reduce((sum,x)=>sum+x.value,0);return `<div class="kanban-col"><div class="p-3 border-b border-line"><div class="flex items-center justify-between mb-1"><div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full" style="background:${s.color}"></span><span class="font-semibold text-sm">${s.name}</span></div><span class="text-xs text-ink-muted bg-cream-100 px-1.5 py-0.5 rounded">${sd.length}</span></div><div class="text-[10px] text-ink-muted">${s.desc} · ${naira(val)}</div></div><div class="p-3 flex-1 scroll-area" style="max-height:60vh">${sd.map(x=>{const ass=associate(x.owner);const pc={High:'bg-accent',Medium:'bg-amber-400',Low:'bg-cream-300'};return `<div class="kanban-card" style="border-left-color:${s.color}" onclick="openDeal('${x.id}')"><div class="flex items-start justify-between mb-2"><div class="text-xs font-semibold leading-tight flex-1">${x.patient}</div><div class="w-2 h-2 rounded-full ${pc[x.priority]}"></div></div><div class="text-sm font-bold text-brand-deep mb-2">${x.value?naira(x.value):'—'}</div><div class="text-[10px] text-ink-muted mb-2">${x.nextAction}</div><div class="flex items-center justify-between pt-2 border-t border-line"><div class="flex items-center gap-1.5">${avatarHTML(x.owner,'w-5 h-5 text-[8px]')}<span class="text-[10px] text-ink-muted">${ass.avatar}</span></div><div class="text-[10px] text-ink-muted"><i class="fas fa-clock text-[9px]"></i> ${x.days}d</div></div></div>`;}).join('')||'<div class="text-center text-[10px] text-ink-muted py-6">No deals</div>'}</div></div>`;}).join('')}</div></div>`;}
+
+/* ===== ACTIVITIES ===== */
+function viewActivities(){const a=fActivities();return `<div class="p-5 lg:p-8 space-y-5"><div class="flex flex-col md:flex-row md:items-center justify-between gap-3"><div><h1 class="font-display font-extrabold text-2xl">Activities</h1><p class="text-sm text-ink-muted">Sales & service action log · synced to Google Sheets</p></div><div class="flex gap-2"><button class="btn btn-ghost" onclick="openExportOptions('activities')"><i class="fas fa-file-export text-[11px]"></i> Export</button><button class="btn btn-primary" onclick="openLogActivity()"><i class="fas fa-plus text-[11px]"></i> Log Activity</button></div></div><div class="grid grid-cols-2 md:grid-cols-4 gap-3">${['Calls','WhatsApp','Meetings','Emails'].map((t,i)=>{const cnt=[3,5,2,4];const ic=['phone','comment-dots','users','envelope'];const cl=['sky','green','purple','amber'];return `<div class="card p-3 flex items-center gap-3"><div class="w-9 h-9 rounded-lg bg-${cl[i]}-50 text-${cl[i]}-600 flex items-center justify-center"><i class="fas fa-${ic[i]} text-sm"></i></div><div><div class="font-display font-bold text-lg">${cnt[i]}</div><div class="text-[10px] text-ink-muted">${t}</div></div></div>`;}).join('')}</div><div class="card p-5"><div class="flex items-center justify-between mb-4"><h3 class="font-display font-bold text-base">Activity Timeline</h3><div class="flex gap-1.5"><span class="chip active text-[10px]">All</span><span class="chip text-[10px]">Completed</span><span class="chip text-[10px]">Upcoming</span></div></div><div>${a.map(x=>{const ic={call:'phone',whatsapp:'comment-dots',meeting:'users',email:'envelope',task:'list-check',referral:'hand-holding-medical'};return `<div class="timeline-item" onclick="openActivity('${x.id}')"><div class="timeline-dot" style="border-color:${x.status==='upcoming'?'#f59e0b':'#14B8A6'}"><i class="fas fa-${ic[x.type]} text-[7px]" style="color:${x.status==='upcoming'?'#f59e0b':'#14B8A6'}"></i></div><div class="card card-interactive p-3.5"><div class="flex items-start justify-between gap-3 mb-1.5"><div class="flex-1"><div class="flex items-center gap-2 flex-wrap"><span class="text-sm font-semibold">${x.title}</span><span class="stat-pill ${x.status==='completed'?'bg-green-100 text-green-700':'bg-amber-100 text-amber-700'}">${x.status}</span></div><div class="text-xs text-ink-muted mt-1">${x.patient}</div></div><div class="text-right"><div class="text-[10px] text-ink-muted">${x.time.split(' ')[0]}</div><div class="text-xs font-bold">${x.time.split(' ')[1]||''}</div></div></div><div class="flex items-center justify-between text-[10px] text-ink-muted pt-2 border-t border-line"><div class="flex items-center gap-3"><span><i class="fas fa-tag text-[9px]"></i> ${x.type}</span>${x.duration?`<span><i class="fas fa-hourglass text-[9px]"></i> ${x.duration}</span>`:''}<span class="flex items-center gap-1">${avatarHTML(x.owner,'w-4 h-4 text-[7px]')} ${associate(x.owner).name}</span></div><span>${x.outcome}</span></div></div></div>`;}).join('')}</div></div></div>`;}
+
+/* ===== REFERRALS ===== */
+function viewReferrals(){const r=fReferrals();const tc=r.filter(x=>x.status==='Converted').reduce((s,x)=>s+x.value,0);return `<div class="p-5 lg:p-8 space-y-5"><div class="flex flex-col md:flex-row md:items-center justify-between gap-3"><div><h1 class="font-display font-extrabold text-2xl">Referrals</h1><p class="text-sm text-ink-muted">External doctors & hospitals · ${r.length} active</p></div><button class="btn btn-primary" onclick="openReferralForm()"><i class="fas fa-plus text-[11px]"></i> Log Referral</button></div><div class="grid grid-cols-2 lg:grid-cols-4 gap-3"><div class="card p-4"><div class="text-[10px] text-ink-muted uppercase font-bold mb-1">Total Referrals</div><div class="font-display font-bold text-xl">${r.length}</div></div><div class="card p-4"><div class="text-[10px] text-ink-muted uppercase font-bold mb-1">Converted</div><div class="font-display font-bold text-xl text-green-600">${r.filter(x=>x.status==='Converted').length}</div></div><div class="card p-4"><div class="text-[10px] text-ink-muted uppercase font-bold mb-1">Pipeline Value</div><div class="font-display font-bold text-xl text-brand-deep">${naira(tc)}</div></div><div class="card p-4"><div class="text-[10px] text-ink-muted uppercase font-bold mb-1">Active Referrers</div><div class="font-display font-bold text-xl">${new Set(r.map(x=>x.source)).size}</div></div></div><div class="card overflow-hidden"><div class="p-4 border-b border-line flex items-center justify-between"><h3 class="font-display font-bold text-sm">All Referrals</h3><button class="btn btn-ghost text-xs py-1.5 px-2.5" onclick="openExportOptions('referrals')"><i class="fas fa-file-export text-[10px]"></i> Export</button></div><div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-cream-100 text-[10px] uppercase tracking-wider text-ink-muted"><tr><th class="text-left px-4 py-3 font-bold">Source</th><th class="text-left px-4 py-3 font-bold">Patient</th><th class="text-right px-4 py-3 font-bold">Value</th><th class="text-center px-4 py-3 font-bold">Status</th></tr></thead><tbody>${r.map(x=>`<tr class="border-t border-line hover:bg-cream-100 cursor-pointer" onclick="openReferral('${x.id}')"><td class="px-4 py-3"><div class="text-xs font-semibold">${x.source}</div><div class="text-[10px] text-ink-muted">${x.sourceOrg}</div></td><td class="px-4 py-3 text-xs">${x.patient}</td><td class="px-4 py-3 text-right font-semibold text-xs">${x.value?naira(x.value):'—'}</td><td class="px-4 py-3 text-center"><span class="stat-pill ${x.status==='Converted'?'bg-green-100 text-green-700':x.status==='In Progress'?'bg-amber-100 text-amber-700':'bg-sky-100 text-sky-700'}">${x.status}</span></td></tr>`).join('')}</tbody></table></div></div></div>`;}
+
+/* ===== CAMPAIGNS ===== */
+function viewCampaigns(){const c=fCampaigns();return `<div class="p-5 lg:p-8 space-y-5"><div class="flex flex-col md:flex-row md:items-center justify-between gap-3"><div><h1 class="font-display font-extrabold text-2xl">Campaigns</h1><p class="text-sm text-ink-muted">Marketing campaigns</p></div><button class="btn btn-primary" onclick="openNewCampaign()"><i class="fas fa-plus text-[11px]"></i> New Campaign</button></div><div class="grid grid-cols-1 lg:grid-cols-2 gap-4">${c.map(x=>{const conv=x.reach?Math.round(x.conversions/x.reach*100*10)/10:0;const sp=x.budget?Math.round(x.spent/x.budget*100):0;return `<div class="card card-interactive p-5" onclick="openCampaign('${x.id}')"><div class="flex items-start justify-between mb-3"><div><div class="font-display font-bold text-base">${x.name}</div><div class="text-[10px] text-ink-muted mt-0.5">${x.channel} · ${x.team}</div></div><span class="stat-pill ${x.status==='Active'?'bg-green-100 text-green-700':x.status==='Draft'?'bg-cream-200 text-ink-soft':'bg-sky-100 text-sky-700'}">${x.status}</span></div><div class="grid grid-cols-3 gap-3 mb-3"><div><div class="text-[10px] text-ink-muted">Reach</div><div class="font-display font-bold text-sm">${x.reach.toLocaleString()}</div></div><div><div class="text-[10px] text-ink-muted">Conversions</div><div class="font-display font-bold text-sm text-brand-deep">${x.conversions}</div></div><div><div class="text-[10px] text-ink-muted">Rate</div><div class="font-display font-bold text-sm text-accent">${conv}%</div></div></div><div class="mb-2"><div class="flex justify-between text-[10px] text-ink-muted mb-1"><span>Budget</span><span>${sp}%</span></div><div class="progress-bar"><div style="width:${Math.min(sp,100)}%;background:${sp>90?'#f97362':'#14B8A6'}"></div></div></div></div>`;}).join('')}</div></div>`;}
+
+/* ===== WHATSAPP ===== */
+function viewWhatsApp(){return `<div class="p-5 lg:p-8 space-y-5"><div class="flex flex-col md:flex-row md:items-center justify-between gap-3"><div><h1 class="font-display font-extrabold text-2xl">WhatsApp Inbox</h1><p class="text-sm text-ink-muted">Wati-style shared inbox</p></div><div class="flex gap-2"><button class="btn btn-whatsapp" onclick="openWhatsAppAddNumber()"><i class="fab fa-whatsapp text-sm"></i> Add Number</button><button class="btn btn-primary" onclick="openWhatsAppComposer()"><i class="fas fa-bullhorn text-[11px]"></i> Broadcast</button></div></div><div class="grid grid-cols-1 lg:grid-cols-3 gap-4" style="height:70vh"><div class="card flex flex-col overflow-hidden"><div class="p-3 border-b border-line"><div class="relative"><i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted text-[10px]"></i><input type="text" class="search-input py-2 text-xs" placeholder="Search chats..."></div></div><div class="flex-1 overflow-y-auto scroll-area">${WHATSAPP_CHATS.map(x=>`<div class="flex items-center gap-3 p-3 border-b border-line hover:bg-cream-100 cursor-pointer" onclick="openWhatsAppChat('${x.id}')">${avatarHTML(x.owner,'w-10 h-10 text-xs')}<div class="flex-1 min-w-0"><div class="flex items-center justify-between"><span class="text-xs font-semibold truncate">${x.name}</span><span class="text-[10px] text-ink-muted">${x.time}</span></div><div class="flex items-center justify-between gap-2"><span class="text-[11px] text-ink-muted truncate">${x.last}</span>${x.unread?`<span class="bg-green-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0">${x.unread}</span>`:''}</div></div></div>`).join('')}</div></div><div class="card lg:col-span-2 flex flex-col overflow-hidden"><div class="p-4 border-b border-line flex items-center justify-between"><div class="flex items-center gap-3">${avatarHTML('u1','w-10 h-10 text-xs')}<div><div class="font-semibold text-sm">Mrs. Funmilayo Ransome-Kuti</div><div class="text-[10px] text-ink-muted flex items-center gap-1.5"><span class="live-dot"></span> Online</div></div></div></div><div class="flex-1 overflow-y-auto p-4 space-y-3 bg-cream-100/40 scroll-area"><div class="text-center text-[10px] text-ink-muted">Today</div><div class="flex justify-start"><div class="bg-white rounded-2xl rounded-tl-sm px-3.5 py-2 max-w-[75%] shadow-sm"><p class="text-xs">Good morning Dr. Amara. I wanted to confirm my chemotherapy schedule.</p><div class="text-[9px] text-ink-muted mt-1">08:14</div></div></div><div class="flex justify-end"><div class="bg-brand-500 text-white rounded-2xl rounded-tr-sm px-3.5 py-2 max-w-[75%]"><p class="text-xs">Good morning. Your session is confirmed for Tuesday 10:00 AM.</p><div class="text-[9px] text-white/70 mt-1">10:32 ✓✓</div></div></div><div class="flex justify-start"><div class="bg-white rounded-2xl rounded-tl-sm px-3.5 py-2 max-w-[75%] shadow-sm"><p class="text-xs">Thank you doctor, I will be there.</p><div class="text-[9px] text-ink-muted mt-1">14:32</div></div></div></div><div class="p-3 border-t border-line"><div class="flex items-center gap-2"><button class="btn btn-ghost p-2.5"><i class="fas fa-paperclip text-xs"></i></button><input type="text" class="flex-1 px-3 py-2.5 bg-cream-100 rounded-xl text-xs border-0 focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="Type a message..."><button class="btn btn-whatsapp p-2.5"><i class="fas fa-paper-plane text-xs"></i></button></div></div></div></div></div>`;}
+
+/* ===== TICKETS ===== */
+function viewTickets(){const t=fTickets();return `<div class="p-5 lg:p-8 space-y-5"><div class="flex flex-col md:flex-row md:items-center justify-between gap-3"><div><h1 class="font-display font-extrabold text-2xl">Support Tickets</h1><p class="text-sm text-ink-muted">Patient service requests · SLA tracking</p></div><button class="btn btn-primary" onclick="openNewTicket()"><i class="fas fa-plus text-[11px]"></i> New Ticket</button></div><div class="grid grid-cols-2 lg:grid-cols-4 gap-3"><div class="card p-4"><div class="text-[10px] text-ink-muted uppercase font-bold mb-1">Open</div><div class="font-display font-bold text-xl text-amber-600">${t.filter(x=>x.status==='Open').length}</div></div><div class="card p-4"><div class="text-[10px] text-ink-muted uppercase font-bold mb-1">In Progress</div><div class="font-display font-bold text-xl text-sky-600">${t.filter(x=>x.status==='In Progress').length}</div></div><div class="card p-4"><div class="text-[10px] text-ink-muted uppercase font-bold mb-1">Escalated</div><div class="font-display font-bold text-xl text-accent">${t.filter(x=>x.status==='Escalated').length}</div></div><div class="card p-4"><div class="text-[10px] text-ink-muted uppercase font-bold mb-1">Resolved</div><div class="font-display font-bold text-xl text-green-600">${t.filter(x=>x.status==='Resolved').length}</div></div></div><div class="card overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-cream-100 text-[10px] uppercase tracking-wider text-ink-muted"><tr><th class="text-left px-4 py-3 font-bold">Ticket</th><th class="text-center px-4 py-3 font-bold">Priority</th><th class="text-center px-4 py-3 font-bold">Status</th><th class="text-left px-4 py-3 font-bold">SLA</th></tr></thead><tbody>${t.map(x=>{const pc={Urgent:'bg-accent text-white',High:'bg-amber-500 text-white',Medium:'bg-amber-100 text-amber-700',Low:'bg-cream-200 text-ink-soft'};const sc={Open:'bg-amber-100 text-amber-700','In Progress':'bg-sky-100 text-sky-700',Escalated:'bg-accent-50 text-accent-700',Resolved:'bg-green-100 text-green-700'};return `<tr class="border-t border-line hover:bg-cream-100 cursor-pointer" onclick="openTicket('${x.id}')"><td class="px-4 py-3"><div class="text-xs font-semibold">${x.subject}</div><div class="text-[10px] text-ink-muted">${x.id.toUpperCase()} · ${x.created}</div></td><td class="px-4 py-3 text-center"><span class="stat-pill ${pc[x.priority]}">${x.priority}</span></td><td class="px-4 py-3 text-center"><span class="stat-pill ${sc[x.status]}">${x.status}</span></td><td class="px-4 py-3 text-xs ${x.sla.includes('Overdue')?'text-accent font-bold':'text-ink-muted'}">${x.sla}</td></tr>`;}).join('')}</tbody></table></div></div></div>`;}
+
+/* ===== TEMPLATES ===== */
+function viewTemplates(){return `<div class="p-5 lg:p-8 space-y-5"><div class="flex flex-col md:flex-row md:items-center justify-between gap-3"><div><h1 class="font-display font-extrabold text-2xl">Message Templates</h1><p class="text-sm text-ink-muted">Pre-approved WhatsApp & email templates</p></div><button class="btn btn-primary" onclick="openNewTemplate()"><i class="fas fa-plus text-[11px]"></i> New Template</button></div><div class="flex flex-wrap gap-2">${['All','Onboarding','Scheduling','Billing','Care','Engagement','Referrals','Campaign'].map((t,i)=>`<div class="chip ${i===0?'active':''}">${t}</div>`).join('')}</div><div class="grid grid-cols-1 lg:grid-cols-2 gap-4">${TEMPLATES.map(x=>`<div class="card card-interactive p-5" onclick="openTemplate('${x.id}')"><div class="flex items-start justify-between mb-3"><div class="flex items-center gap-2"><i class="fab fa-${x.channel==='WhatsApp'?'whatsapp text-green-500':'envelope text-amber-500'}"></i><div><div class="font-semibold text-sm">${x.name}</div><div class="text-[10px] text-ink-muted">${x.category} · ${x.channel}</div></div></div><button class="btn btn-ghost text-[10px] py-1 px-2"><i class="fas fa-copy text-[9px]"></i> Use</button></div><p class="text-xs text-ink-soft bg-cream-100 p-3 rounded-lg" style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">${x.body}</p><div class="flex items-center justify-between text-[10px] text-ink-muted mt-3 pt-3 border-t border-line"><span><i class="fas fa-paper-plane text-[9px]"></i> ${x.uses} uses</span><span>Last: ${fmtDate(x.lastUsed)}</span></div></div>`).join('')}</div></div>`;}
+
+/* ===== AUTOMATION ===== */
+function viewAutomation(){return `<div class="p-5 lg:p-8 space-y-5"><div class="flex flex-col md:flex-row md:items-center justify-between gap-3"><div><h1 class="font-display font-extrabold text-2xl">Automation</h1><p class="text-sm text-ink-muted">Repetitive workflows · powered by Google Apps Script</p></div><button class="btn btn-primary" onclick="openNewRule()"><i class="fas fa-plus text-[11px]"></i> New Rule</button></div><div class="card p-5 bg-gradient-to-br from-brand-deep to-brand-700 text-white border-0"><div class="flex items-center gap-4"><div class="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center"><i class="fas fa-robot text-xl text-brand-300"></i></div><div class="flex-1"><div class="font-display font-bold text-base">7 active automations saved 142 hours this month</div><div class="text-xs text-white/70 mt-0.5">Connected to Google Apps Script</div></div></div></div><div class="space-y-3">${AUTOMATIONS.map(a=>`<div class="card p-4"><div class="flex items-start justify-between gap-3 mb-2"><div class="flex-1"><div class="flex items-center gap-2 mb-1"><div class="w-8 h-8 rounded-lg ${a.status==='active'?'bg-green-50 text-green-600':'bg-cream-200 text-ink-muted'} flex items-center justify-center"><i class="fas fa-${a.status==='active'?'play':'pause'} text-xs"></i></div><div><div class="font-semibold text-sm">${a.name}</div><div class="text-[10px] text-ink-muted">${a.runs} runs · Last: ${a.lastRun}</div></div></div></div><div class="toggle ${a.status==='active'?'on':''}" onclick="toggleAutomation('${a.id}',this)"></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs"><div class="bg-cream-100 rounded-lg p-2.5"><div class="text-[10px] text-ink-muted uppercase font-bold mb-1"><i class="fas fa-bolt text-[9px]"></i> When</div><div class="text-ink-soft">${a.trigger}</div></div><div class="bg-cream-100 rounded-lg p-2.5"><div class="text-[10px] text-ink-muted uppercase font-bold mb-1"><i class="fas fa-arrow-right text-[9px]"></i> Then</div><div class="text-ink-soft">${a.action}</div></div></div></div>`).join('')}</div></div>`;}
+
+/* ===== TEAM ===== */
+function viewTeam(){return `<div class="p-5 lg:p-8 space-y-5"><div class="flex flex-col md:flex-row md:items-center justify-between gap-3"><div><h1 class="font-display font-extrabold text-2xl">Team</h1><p class="text-sm text-ink-muted">Teams, roles & members · ${ASSOCIATES.length} associates across ${TEAMS.length} teams</p></div><div class="flex gap-2"><button class="btn btn-ghost" onclick="openCreateTeam()"><i class="fas fa-people-group text-[11px]"></i> Create Team</button><button class="btn btn-primary" onclick="openInviteMember()"><i class="fas fa-user-plus text-[11px]"></i> Invite Member</button></div></div><div><div class="flex items-center gap-2 mb-3"><i class="fas fa-hospital text-brand-deep text-sm"></i><h2 class="font-display font-bold text-base">Teams</h2></div><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">${TEAMS.map(t=>{const lead=associate(t.lead);const catColor={HMO:'bg-sky-100 text-sky-700',Corporate:'bg-purple-100 text-purple-700',Private:'bg-green-100 text-green-700',Referral:'bg-amber-100 text-amber-700'};return `<div class="card card-interactive p-5" onclick="openTeamDetail('${t.id}')"><div class="flex items-start justify-between mb-3"><div class="w-11 h-11 rounded-xl bg-gradient-to-br ${lead.color} flex items-center justify-center text-white"><i class="fas fa-user-md"></i></div><span class="stat-pill ${catColor[t.category]}">${t.category}</span></div><div class="font-display font-bold text-sm mb-1">${t.name}</div><div class="text-[10px] text-ink-muted mb-3">Specialty: ${t.specialty}</div><div class="grid grid-cols-3 gap-2 mb-3"><div class="text-center bg-cream-100 rounded-lg p-2"><div class="font-display font-bold text-sm">${t.members}</div><div class="text-[9px] text-ink-muted uppercase">Members</div></div><div class="text-center bg-cream-100 rounded-lg p-2"><div class="font-display font-bold text-sm">${t.patients}</div><div class="text-[9px] text-ink-muted uppercase">Patients</div></div><div class="text-center bg-cream-100 rounded-lg p-2"><div class="font-display font-bold text-sm">${t.deals}</div><div class="text-[9px] text-ink-muted uppercase">Deals</div></div></div><div class="flex items-center gap-2 pt-3 border-t border-line">${avatarHTML(t.lead,'w-6 h-6 text-[9px]')}<div class="flex-1 min-w-0"><div class="text-[10px] font-semibold truncate">${lead.name}</div><div class="text-[9px] text-ink-muted">Team Lead</div></div></div></div>`;}).join('')}</div></div><div><div class="flex items-center gap-2 mb-3"><i class="fas fa-shield-halved text-brand-deep text-sm"></i><h2 class="font-display font-bold text-base">Roles & Permissions</h2></div><div class="grid grid-cols-1 md:grid-cols-3 gap-4">${ROLES.map(r=>{const mc=ASSOCIATES.filter(a=>a.roleId===r.id).length;return `<div class="card p-5"><div class="flex items-center gap-3 mb-3"><div class="w-11 h-11 rounded-xl ${r.badgeClass} flex items-center justify-center"><i class="fas fa-${r.icon} text-sm"></i></div><div><div class="font-display font-bold text-sm">${r.name}</div><div class="text-[10px] text-ink-muted">Level ${r.level} · ${mc} ${mc===1?'member':'members'}</div></div></div><p class="text-xs text-ink-soft mb-3">${r.desc}</p><div class="space-y-1.5">${r.perms.map(p=>`<div class="flex items-start gap-1.5 text-[11px]"><i class="fas fa-check text-green-500 text-[9px] mt-0.5"></i><span class="text-ink-soft">${p}</span></div>`).join('')}</div></div>`;}).join('')}</div></div><div><div class="flex items-center gap-2 mb-3"><i class="fas fa-users text-brand-deep text-sm"></i><h2 class="font-display font-bold text-base">Team Members</h2></div><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">${ASSOCIATES.map(a=>{const r=role(a.roleId);const deals=PIPELINE_DEALS.filter(d=>d.owner===a.id);const val=deals.reduce((s,d)=>s+d.value,0);const acts=ACTIVITIES.filter(x=>x.owner===a.id).length;return `<div class="card card-interactive p-5"><div class="flex items-center gap-3 mb-3"><div class="avatar w-12 h-12 bg-gradient-to-br ${a.color} text-sm">${a.avatar}</div><div class="flex-1 min-w-0"><div class="font-semibold text-sm truncate">${a.name}</div><div class="text-[10px] text-ink-muted">${a.role} · ${a.specialty}</div></div></div><div class="mb-3">${roleBadge(a.roleId)}</div><div class="grid grid-cols-3 gap-2 mb-3"><div class="text-center bg-cream-100 rounded-lg p-2"><div class="font-display font-bold text-sm">${deals.length}</div><div class="text-[9px] text-ink-muted uppercase">Deals</div></div><div class="text-center bg-cream-100 rounded-lg p-2"><div class="font-display font-bold text-sm">${acts}</div><div class="text-[9px] text-ink-muted uppercase">Acts</div></div><div class="text-center bg-cream-100 rounded-lg p-2"><div class="font-display font-bold text-sm">${deals.filter(d=>d.stage==='won').length}</div><div class="text-[9px] text-ink-muted uppercase">Won</div></div></div><div class="text-xs flex justify-between mb-1"><span class="text-ink-muted">Pipeline</span><span class="font-bold text-brand-deep">${naira(val)}</span></div><button class="btn btn-ghost w-full mt-3 text-xs py-1.5" onclick="setFilter('${a.id}')"><i class="fas fa-eye text-[10px]"></i> View Dashboard</button></div>`;}).join('')}</div></div></div>`;}
+
+/* ===== COMPLIANCE ===== */
+function viewCompliance(){return `<div class="p-5 lg:p-8 space-y-5"><div class="flex flex-col md:flex-row md:items-center justify-between gap-3"><div><h1 class="font-display font-extrabold text-2xl">NDPA Compliance</h1><p class="text-sm text-ink-muted">Nigeria Data Protection Act 2023</p></div><button class="btn btn-primary" onclick="openDownloadReport()"><i class="fas fa-download text-[11px]"></i> Download Report</button></div><div class="card p-6 bg-gradient-to-br from-brand-deep to-brand-700 text-white border-0"><div class="flex items-center gap-5"><div class="relative w-24 h-24"><svg viewBox="0 0 100 100" class="w-full h-full -rotate-90"><circle cx="50" cy="50" r="42" stroke="rgba(255,255,255,0.15)" stroke-width="8" fill="none"/><circle cx="50" cy="50" r="42" stroke="#14B8A6" stroke-width="8" fill="none" stroke-dasharray="263.8" stroke-dashoffset="5.3" stroke-linecap="round"/></svg><div class="absolute inset-0 flex items-center justify-center"><div class="text-center"><div class="font-display font-extrabold text-2xl">98%</div><div class="text-[9px] text-white/70">Compliance</div></div></div></div><div class="flex-1"><div class="font-display font-bold text-xl">Excellent Standing</div><p class="text-sm text-white/80 mt-1">Fully aligned with NDPA 2023. All patient data encrypted at rest and in transit.</p></div></div></div><div class="grid grid-cols-2 lg:grid-cols-4 gap-3">${[{l:'Consent Records',v:'248/251',i:'check-circle',c:'text-green-600 bg-green-50',s:'98.8%'},{l:'Data Subjects',v:'251',i:'users',c:'text-brand-600 bg-brand-50',s:'Patients'},{l:'Access Requests',v:'3',i:'envelope-open-text',c:'text-amber-600 bg-amber-50',s:'Pending: 1'},{l:'Breach Reports',v:'0',i:'shield-check',c:'text-green-600 bg-green-50',s:'Last 90 days'}].map(x=>`<div class="card p-4"><div class="w-9 h-9 rounded-lg ${x.c} flex items-center justify-center mb-2"><i class="fas fa-${x.i} text-sm"></i></div><div class="font-display font-bold text-xl">${x.v}</div><div class="text-xs text-ink-muted">${x.l}</div><div class="text-[10px] text-ink-muted mt-0.5">${x.s}</div></div>`).join('')}</div></div>`;}
+
+/* ===== INTEGRATIONS ===== */
+function viewIntegrations(){return `<div class="p-5 lg:p-8 space-y-5"><div><h1 class="font-display font-extrabold text-2xl">Integrations</h1><p class="text-sm text-ink-muted">Built around Google Workspace</p></div><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">${INTEGRATIONS.map(i=>`<div class="card p-5"><div class="flex items-start justify-between mb-3"><div class="w-11 h-11 rounded-xl ${i.color==='green'?'bg-green-50 text-green-600':'bg-amber-50 text-amber-600'} flex items-center justify-center"><i class="${i.icon} text-lg"></i></div><span class="stat-pill ${i.color==='green'?'bg-green-100 text-green-700':'bg-amber-100 text-amber-700'}">${i.connected?'Connected':'Available'}</span></div><div class="font-semibold text-sm mb-1">${i.name}</div><div class="text-xs text-ink-muted mb-3">${i.desc}</div><button class="btn ${i.connected?'btn-ghost':'btn-primary'} w-full text-xs py-2" onclick="openIntegrationConfig('${i.id}')">${i.connected?'<i class="fas fa-gear text-[10px]"></i> Configure':'<i class="fas fa-link text-[10px]"></i> Connect'}</button></div>`).join('')}</div></div>`;}
+
+/* ===== NAV ===== */
+function nav(view){state.view=view;$$('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.view===view));renderView();$('#sidebar').classList.remove('open');$('#sidebarBackdrop').classList.remove('open');}
+
+function toggleSidebar(){$('#sidebar').classList.toggle('open');$('#sidebarBackdrop').classList.toggle('open');}
+
+/* ===== DETAIL MODALS ===== */
+function openContact(id){const p=PATIENTS.find(x=>x.id===id);if(!p)return;const ass=associate(p.owner);const st=PIPELINE_STAGES.find(s=>s.name===p.stage)||{color:'#94a3b8'};openModal(`<div class="flex flex-col h-full"><div class="p-5 border-b border-line flex items-start justify-between"><div class="flex items-center gap-3">${avatarHTML(p.owner,'w-12 h-12 text-sm')}<div><div class="font-display font-bold text-lg">${p.name}</div><div class="text-xs text-ink-muted">${p.type} · ${p.team} team</div></div></div><button onclick="closeModal()" class="btn btn-ghost p-2"><i class="fas fa-times"></i></button></div><div class="flex-1 overflow-y-auto scroll-area p-5 space-y-4"><div class="grid grid-cols-2 gap-3"><div class="card p-3"><div class="text-[10px] text-ink-muted uppercase font-bold">Stage</div><div class="flex items-center gap-1.5 mt-1"><span class="w-2 h-2 rounded-full" style="background:${st.color}"></span>${p.stage}</div></div><div class="card p-3"><div class="text-[10px] text-ink-muted uppercase font-bold">Deal Value</div><div class="font-bold text-sm mt-1">${p.value?naira(p.value):'—'}</div></div></div><div class="card p-4"><div class="font-semibold text-sm mb-3">Patient Journey</div><div class="flex items-center justify-between mb-2">${PIPELINE_STAGES.map((s,i)=>{const reached=PIPELINE_STAGES.findIndex(x=>x.name===p.stage)>=i;return `<div class="flex-1 flex items-center"><div class="flex flex-col items-center"><div class="w-7 h-7 rounded-full ${reached?'':'bg-cream-200'} flex items-center justify-center text-xs" style="${reached?`background:${s.color}`:''}">${reached?'<i class="fas fa-check text-white text-[10px]"></i>':`<span class="text-ink-muted">${i+1}</span>`}</div><div class="text-[9px] mt-1 text-center">${s.name}</div></div>${i<PIPELINE_STAGES.length-1?`<div class="flex-1 h-0.5 mx-1" style="background:${reached?s.color:'#EFEAE0'}"></div>`:''}</div>`;}).join('')}</div></div><div class="card p-4"><div class="font-semibold text-sm mb-2">Contact Info</div><div class="space-y-2 text-xs"><div class="flex items-center gap-2"><i class="fas fa-phone text-ink-muted text-[10px]"></i> ${p.phone}</div><div class="flex items-center gap-2"><i class="fas fa-envelope text-ink-muted text-[10px]"></i> ${p.email}</div></div><div class="flex gap-1.5 mt-3"><button class="btn btn-whatsapp text-xs py-1.5 flex-1"><i class="fab fa-whatsapp text-xs"></i> Message</button><button class="btn btn-primary text-xs py-1.5 flex-1" onclick="closeModal();openLogActivity()"><i class="fas fa-plus text-[10px]"></i> Log Activity</button></div></div></div><div class="p-4 border-t border-line flex gap-2"><button class="btn btn-ghost flex-1" onclick="closeModal()">Close</button><button class="btn btn-primary flex-1" onclick="showToast('Record synced to Google Sheets','sync')">Save to Sheet</button></div></div>`);}
+
+function openDeal(id){const d=PIPELINE_DEALS.find(x=>x.id===id);if(!d)return;const ass=associate(d.owner);const st=PIPELINE_STAGES.find(s=>s.id===d.stage);openModal(`<div class="flex flex-col h-full"><div class="p-5 border-b border-line flex items-start justify-between"><div class="flex items-center gap-3"><div class="w-12 h-12 rounded-xl flex items-center justify-center text-white" style="background:${st.color}"><i class="fas fa-handshake"></i></div><div><div class="font-display font-bold text-lg">${d.patient}</div><div class="text-xs text-ink-muted">${d.team} · ${d.priority} · ${st.name}</div></div></div><button onclick="closeModal()" class="btn btn-ghost p-2"><i class="fas fa-times"></i></button></div><div class="flex-1 overflow-y-auto scroll-area p-5 space-y-4"><div class="card p-4 bg-gradient-to-br from-brand-deep to-brand-700 text-white border-0"><div class="text-xs text-white/70 uppercase font-bold">Deal Value</div><div class="font-display font-extrabold text-3xl mt-1">${naira(d.value)}</div><div class="text-xs text-white/70 mt-1">Owner: ${ass.name}</div></div><div class="grid grid-cols-2 gap-3"><div class="card p-3"><div class="text-[10px] text-ink-muted uppercase font-bold">Next Action</div><div class="text-sm mt-1">${d.nextAction}</div></div><div class="card p-3"><div class="text-[10px] text-ink-muted uppercase font-bold">Days in Stage</div><div class="text-sm mt-1">${d.days} days</div></div></div></div><div class="p-4 border-t border-line flex gap-2"><button class="btn btn-ghost flex-1" onclick="closeModal()">Close</button><button class="btn btn-primary flex-1" onclick="showToast('Deal updated')">Update</button></div></div>`);}
+
+function openActivity(id){const a=ACTIVITIES.find(x=>x.id===id);if(!a)return;const ass=associate(a.owner);const ic={call:'phone',whatsapp:'comment-dots',meeting:'users',email:'envelope',task:'list-check',referral:'hand-holding-medical'};openModal(`<div class="flex flex-col h-full max-w-2xl mx-auto"><div class="p-5 border-b border-line flex items-start justify-between"><div class="flex items-center gap-3"><div class="w-11 h-11 rounded-xl bg-brand-50 text-brand-deep flex items-center justify-center"><i class="fas fa-${ic[a.type]}"></i></div><div><div class="font-display font-bold text-lg">${a.title}</div><div class="text-xs text-ink-muted capitalize">${a.type} · ${a.time}</div></div></div><button onclick="closeModal()" class="btn btn-ghost p-2"><i class="fas fa-times"></i></button></div><div class="flex-1 overflow-y-auto scroll-area p-5 space-y-4"><div class="grid grid-cols-2 gap-3"><div class="card p-3"><div class="text-[10px] text-ink-muted uppercase font-bold">Patient</div><div class="text-sm mt-1">${a.patient}</div></div><div class="card p-3"><div class="text-[10px] text-ink-muted uppercase font-bold">Owner</div><div class="text-sm mt-1 flex items-center gap-1.5">${avatarHTML(a.owner,'w-5 h-5 text-[8px]')} ${ass.name}</div></div></div><div class="card p-4"><div class="font-semibold text-sm mb-2">Outcome</div><p class="text-xs text-ink-soft">${a.outcome}</p></div></div><div class="p-4 border-t border-line flex gap-2"><button class="btn btn-ghost flex-1" onclick="closeModal()">Close</button><button class="btn btn-primary flex-1" onclick="closeModal();showToast('Logged to Google Sheets','sync')">Log to Sheet</button></div></div>`,'640px');}
+
+function openReferral(id){const r=REFERRALS.find(x=>x.id===id);if(!r)return;openModal(`<div class="flex flex-col h-full max-w-2xl mx-auto"><div class="p-5 border-b border-line flex items-start justify-between"><div class="flex items-center gap-3"><div class="w-11 h-11 rounded-xl bg-accent-50 text-accent flex items-center justify-center"><i class="fas fa-hand-holding-medical"></i></div><div><div class="font-display font-bold text-lg">${r.source}</div><div class="text-xs text-ink-muted">${r.sourceOrg} · ${fmtDate(r.date)}</div></div></div><button onclick="closeModal()" class="btn btn-ghost p-2"><i class="fas fa-times"></i></button></div><div class="flex-1 overflow-y-auto scroll-area p-5 space-y-4"><div class="grid grid-cols-2 gap-3"><div class="card p-3"><div class="text-[10px] text-ink-muted uppercase font-bold">Patient</div><div class="text-sm mt-1">${r.patient}</div></div><div class="card p-3"><div class="text-[10px] text-ink-muted uppercase font-bold">Value</div><div class="text-sm mt-1 font-bold text-brand-deep">${r.value?naira(r.value):'—'}</div></div></div></div><div class="p-4 border-t border-line flex gap-2"><button class="btn btn-ghost flex-1" onclick="closeModal()">Close</button><button class="btn btn-primary flex-1" onclick="closeModal();showToast('Referral updated')">Update</button></div></div>`,'640px');}
+
+function openCampaign(id){const c=CAMPAIGNS.find(x=>x.id===id);if(!c)return;openModal(`<div class="flex flex-col h-full max-w-2xl mx-auto"><div class="p-5 border-b border-line flex items-start justify-between"><div><div class="font-display font-bold text-lg">${c.name}</div><div class="text-xs text-ink-muted">${c.channel} · ${c.team}</div></div><button onclick="closeModal()" class="btn btn-ghost p-2"><i class="fas fa-times"></i></button></div><div class="flex-1 overflow-y-auto scroll-area p-5 space-y-4"><div class="grid grid-cols-3 gap-3"><div class="card p-3 text-center"><div class="text-[10px] text-ink-muted uppercase font-bold">Reach</div><div class="font-display font-bold text-xl mt-1">${c.reach.toLocaleString()}</div></div><div class="card p-3 text-center"><div class="text-[10px] text-ink-muted uppercase font-bold">Conv.</div><div class="font-display font-bold text-xl mt-1 text-brand-deep">${c.conversions}</div></div><div class="card p-3 text-center"><div class="text-[10px] text-ink-muted uppercase font-bold">Rate</div><div class="font-display font-bold text-xl mt-1 text-accent">${c.reach?Math.round(c.conversions/c.reach*100*10)/10:0}%</div></div></div></div><div class="p-4 border-t border-line flex gap-2"><button class="btn btn-ghost flex-1" onclick="closeModal()">Close</button><button class="btn btn-primary flex-1" onclick="closeModal();showToast('Report exported')">Export</button></div></div>`,'640px');}
+
+function openTicket(id){const t=TICKETS.find(x=>x.id===id);if(!t)return;openModal(`<div class="flex flex-col h-full max-w-2xl mx-auto"><div class="p-5 border-b border-line flex items-start justify-between"><div><div class="font-display font-bold text-lg">${t.subject}</div><div class="text-xs text-ink-muted">${t.id.toUpperCase()} · ${t.channel}</div></div><button onclick="closeModal()" class="btn btn-ghost p-2"><i class="fas fa-times"></i></button></div><div class="flex-1 overflow-y-auto scroll-area p-5 space-y-4"><div class="grid grid-cols-2 gap-3"><div class="card p-3"><div class="text-[10px] text-ink-muted uppercase font-bold">Patient</div><div class="text-sm mt-1">${t.patient}</div></div><div class="card p-3"><div class="text-[10px] text-ink-muted uppercase font-bold">Priority</div><div class="mt-1"><span class="stat-pill ${t.priority==='Urgent'?'bg-accent text-white':t.priority==='High'?'bg-amber-500 text-white':'bg-amber-100 text-amber-700'}">${t.priority}</span></div></div></div></div><div class="p-4 border-t border-line flex gap-2"><button class="btn btn-ghost flex-1" onclick="closeModal()">Close</button><button class="btn btn-primary flex-1" onclick="closeModal();showToast('Ticket resolved')">Resolve</button></div></div>`,'640px');}
+
+function openWhatsAppChat(id){nav('whatsapp');}
+function openTemplate(id){const t=TEMPLATES.find(x=>x.id===id);if(!t)return;openModal(`<div class="flex flex-col h-full max-w-xl mx-auto"><div class="p-5 border-b border-line flex items-start justify-between"><div><div class="font-display font-bold text-lg">${t.name}</div><div class="text-xs text-ink-muted">${t.category} · ${t.channel}</div></div><button onclick="closeModal()" class="btn btn-ghost p-2"><i class="fas fa-times"></i></button></div><div class="flex-1 overflow-y-auto scroll-area p-5 space-y-4"><div class="card p-4"><div class="text-[10px] text-ink-muted uppercase font-bold mb-2">Template Body</div><p class="text-sm leading-relaxed">${t.body}</p></div></div><div class="p-4 border-t border-line flex gap-2"><button class="btn btn-ghost flex-1" onclick="closeModal()">Close</button><button class="btn btn-whatsapp flex-1" onclick="closeModal();showToast('Opening WhatsApp composer','comment')"><i class="fab fa-whatsapp"></i> Use Template</button></div></div>`,'640px');}
+
+function openTeamDetail(id){const t=TEAMS.find(x=>x.id===id);if(!t)return;const lead=associate(t.lead);openModal(`<div class="flex flex-col h-full max-w-xl mx-auto"><div class="p-5 border-b border-line flex items-start justify-between"><div><div class="font-display font-bold text-lg">${t.name}</div><div class="text-xs text-ink-muted">${t.specialty} · ${t.category}</div></div><button onclick="closeModal()" class="btn btn-ghost p-2"><i class="fas fa-times"></i></button></div><div class="flex-1 overflow-y-auto scroll-area p-5 space-y-4"><div class="grid grid-cols-3 gap-3"><div class="card p-3 text-center"><div class="text-[10px] text-ink-muted uppercase font-bold">Members</div><div class="font-display font-bold text-xl mt-1">${t.members}</div></div><div class="card p-3 text-center"><div class="text-[10px] text-ink-muted uppercase font-bold">Patients</div><div class="font-display font-bold text-xl mt-1">${t.patients}</div></div><div class="card p-3 text-center"><div class="text-[10px] text-ink-muted uppercase font-bold">Deals</div><div class="font-display font-bold text-xl mt-1">${t.deals}</div></div></div><div class="card p-4"><div class="font-semibold text-sm mb-2">Team Lead</div><div class="flex items-center gap-3">${avatarHTML(t.lead,'w-10 h-10 text-xs')}<div><div class="text-sm font-semibold">${lead.name}</div><div class="text-[10px] text-ink-muted">${lead.role}</div></div></div></div></div><div class="p-4 border-t border-line flex gap-2"><button class="btn btn-ghost flex-1" onclick="closeModal()">Close</button><button class="btn btn-primary flex-1" onclick="closeModal();setFilter('${t.lead}')"><i class="fas fa-eye text-[11px]"></i> View Dashboard</button></div></div>`,'560px');}
+
+/* ===== FORM MODALS ===== */
+function openQuickAdd(){openModal(`<div class="flex flex-col h-full max-w-xl mx-auto"><div class="p-5 border-b border-line flex items-start justify-between"><div><div class="font-display font-bold text-lg">New Contact</div><div class="text-xs text-ink-muted">Add patient, referrer or company</div></div><button onclick="closeModal()" class="btn btn-ghost p-2"><i class="fas fa-times"></i></button></div><div class="flex-1 overflow-y-auto scroll-area p-5 space-y-3"><div class="grid grid-cols-2 gap-3"><div><label class="form-label">Full Name</label><input type="text" class="form-input" placeholder="Patient name"></div><div><label class="form-label">Phone</label><input type="tel" class="form-input" placeholder="+234 ..."></div><div><label class="form-label">Email</label><input type="email" class="form-input" placeholder="email@example.com"></div><div><label class="form-label">Type</label><select class="form-input"><option>Patient</option><option>Referrer</option><option>Company</option></select></div><div><label class="form-label">Team</label><select class="form-input">${TEAMS.map(t=>`<option>${t.name}</option>`).join('')}</select></div><div><label class="form-label">Owner</label><select class="form-input">${ASSOCIATES.map(a=>`<option>${a.name}</option>`).join('')}</select></div></div><div class="card p-3 bg-cream-100"><label class="flex items-start gap-2 text-xs"><input type="checkbox" class="mt-0.5" checked><span><strong>NDPA Consent:</strong> Patient has consented to data processing per NDPA 2023.</span></label></div></div><div class="p-4 border-t border-line flex gap-2"><button class="btn btn-ghost flex-1" onclick="closeModal()">Cancel</button><button class="btn btn-primary flex-1" onclick="closeModal();showToast('Contact saved & synced to Google Sheets','sync')">Save Contact</button></div></div>`,'640px');}
+
+function openLogActivity(){openModal(`<div class="flex flex-col h-full max-w-xl mx-auto"><div class="p-5 border-b border-line flex items-start justify-between"><div><div class="font-display font-bold text-lg">Log Activity</div><div class="text-xs text-ink-muted">Record a sales or service action</div></div><button onclick="closeModal()" class="btn btn-ghost p-2"><i class="fas fa-times"></i></button></div><div class="flex-1 overflow-y-auto scroll-area p-5 space-y-3"><div class="grid grid-cols-2 gap-3"><div><label class="form-label">Activity Type</label><select class="form-input"><option>Call</option><option>WhatsApp</option><option>Meeting</option><option>Email</option><option>Task</option></select></div><div><label class="form-label">Patient</label><input type="text" class="form-input" placeholder="Search patient"></div></div><div><label class="form-label">Subject</label><input type="text" class="form-input" placeholder="Activity title"></div><div><label class="form-label">Outcome</label><textarea class="form-input" rows="4" placeholder="What happened?"></textarea></div><div class="grid grid-cols-2 gap-3"><div><label class="form-label">Date & Time</label><input type="datetime-local" class="form-input"></div><div><label class="form-label">Duration</label><input type="text" class="form-input" placeholder="e.g. 15 min"></div></div></div><div class="p-4 border-t border-line flex gap-2"><button class="btn btn-ghost flex-1" onclick="closeModal()">Cancel</button><button class="btn btn-primary flex-1" onclick="closeModal();showToast('Activity logged','sync')">Save</button></div></div>`,'640px');}
+
+function openReferralForm(){openModal(`<div class="flex flex-col h-full max-w-xl mx-auto"><div class="p-5 border-b border-line flex items-start justify-between"><div><div class="font-display font-bold text-lg">Log Referral</div><div class="text-xs text-ink-muted">From external doctor</div></div><button onclick="closeModal()" class="btn btn-ghost p-2"><i class="fas fa-times"></i></button></div><div class="flex-1 overflow-y-auto scroll-area p-5 space-y-3"><div class="grid grid-cols-2 gap-3"><div><label class="form-label">Source Doctor</label><input type="text" class="form-input" placeholder="Dr. ..."></div><div><label class="form-label">Organization</label><input type="text" class="form-input" placeholder="Hospital"></div><div><label class="form-label">Patient</label><input type="text" class="form-input" placeholder="Patient name"></div><div><label class="form-label">Service</label><select class="form-input"><option>Cardiology</option><option>Oncology</option><option>Orthopedics</option><option>Neurology</option><option>Pediatrics</option></select></div><div><label class="form-label">Est. Value (₦)</label><input type="number" class="form-input" placeholder="0"></div><div><label class="form-label">Assign To</label><select class="form-input">${ASSOCIATES.map(a=>`<option>${a.name}</option>`).join('')}</select></div></div></div><div class="p-4 border-t border-line flex gap-2"><button class="btn btn-ghost flex-1" onclick="closeModal()">Cancel</button><button class="btn btn-primary flex-1" onclick="closeModal();showToast('Referral logged')">Save</button></div></div>`,'640px');}
+
+function openWhatsAppComposer(){openModal(`<div class="flex flex-col h-full max-w-xl mx-auto"><div class="p-5 border-b border-line flex items-start justify-between"><div class="font-display font-bold text-lg flex items-center gap-2"><i class="fab fa-whatsapp text-green-500"></i> WhatsApp Broadcast</div><button onclick="closeModal()" class="btn btn-ghost p-2"><i class="fas fa-times"></i></button></div><div class="flex-1 overflow-y-auto scroll-area p-5 space-y-3"><div><label class="form-label">Recipients</label><select class="form-input"><option>All patients (248)</option><option>Cardiology (52)</option><option>Oncology (38)</option><option>Custom segment</option></select></div><div><label class="form-label">Template</label><select class="form-input">${TEMPLATES.map(t=>`<option>${t.name}</option>`).join('')}</select></div><div><label class="form-label">Message</label><textarea class="form-input" rows="5" placeholder="Use {{name}} for personalization">Hello {{name}}, we hope you're doing well.</textarea></div><div class="card p-3 bg-amber-50 border-amber-200"><div class="text-xs font-semibold text-amber-700"><i class="fas fa-info-circle"></i> NDPA Notice: Only consented patients will receive this.</div></div></div><div class="p-4 border-t border-line flex gap-2"><button class="btn btn-ghost flex-1" onclick="closeModal()">Cancel</button><button class="btn btn-whatsapp flex-1" onclick="closeModal();showToast('Broadcast queued','comment')">Send</button></div></div>`,'640px');}
+
+function openWhatsAppAddNumber(){openModal(`<div class="flex flex-col h-full max-w-md mx-auto"><div class="p-5 border-b border-line flex items-start justify-between"><div class="font-display font-bold text-lg flex items-center gap-2"><i class="fab fa-whatsapp text-green-500 text-xl"></i> Add WhatsApp Number</div><button onclick="closeModal()" class="btn btn-ghost p-2"><i class="fas fa-times"></i></button></div><div class="flex-1 overflow-y-auto scroll-area p-5 space-y-4"><div class="card p-4 bg-green-50 border-green-200"><div class="text-sm font-semibold text-green-700">Connect via Wati (WhatsApp Business API)</div><p class="text-[11px] text-green-700/80 mt-1">Shared team inbox, broadcasts and templates on official WhatsApp Business API.</p></div><div><label class="form-label">Display Name</label><input type="text" class="form-input" placeholder="${state.hospitalName}"></div><div><label class="form-label">WhatsApp Phone Number</label><input type="tel" class="form-input" placeholder="+234 ..."></div><div><label class="form-label">Wati API Token</label><input type="password" class="form-input" placeholder="Paste your Wati API key"></div><div class="card p-3 bg-cream-100"><label class="flex items-start gap-2 text-xs"><input type="checkbox" class="mt-0.5" checked><span>I confirm all recipients have opted in per NDPA.</span></label></div></div><div class="p-4 border-t border-line flex gap-2"><button class="btn btn-ghost flex-1" onclick="closeModal()">Cancel</button><button class="btn btn-whatsapp flex-1" onclick="closeModal();showToast('WhatsApp number connected','whatsapp')"><i class="fab fa-whatsapp"></i> Connect</button></div></div>`,'480px');}
+
+function openConsentManager(){openModal(`<div class="flex flex-col h-full max-w-2xl mx-auto"><div class="p-5 border-b border-line flex items-start justify-between"><div class="font-display font-bold text-lg">NDPA Consent Manager</div><button onclick="closeModal()" class="btn btn-ghost p-2"><i class="fas fa-times"></i></button></div><div class="flex-1 overflow-y-auto scroll-area p-5 space-y-3">${PATIENTS.slice(0,5).map(p=>`<div class="card p-4"><div class="flex items-center justify-between"><div><div class="font-semibold text-sm">${p.name}</div><div class="text-[10px] text-ink-muted">${p.team} team</div></div>${p.consent?'<span class="stat-pill bg-green-100 text-green-700"><i class="fas fa-check"></i> Granted</span>':'<span class="stat-pill bg-amber-100 text-amber-700"><i class="fas fa-clock"></i> Pending</span>'}</div></div>`).join('')}</div><div class="p-4 border-t border-line flex gap-2"><button class="btn btn-ghost flex-1" onclick="closeModal()">Close</button><button class="btn btn-primary flex-1" onclick="closeModal();showToast('Consent synced','sync')">Sync to Sheets</button></div></div>`,'640px');}
+
+function openCreateTeam(){openModal(`<div class="flex flex-col h-full max-w-lg mx-auto"><div class="p-5 border-b border-line flex items-start justify-between"><div><div class="font-display font-bold text-lg">Create Team</div><div class="text-xs text-ink-muted">Form a new specialty team</div></div><button onclick="closeModal()" class="btn btn-ghost p-2"><i class="fas fa-times"></i></button></div><div class="flex-1 overflow-y-auto scroll-area p-5 space-y-4"><div><label class="form-label">Team Name</label><input type="text" class="form-input" placeholder="e.g. Cardiology Team"></div><div><label class="form-label">Specialty</label><select class="form-input"><option>Cardiology</option><option>Oncology</option><option>Orthopedics</option><option>Neurology</option><option>Pediatrics</option><option>Internal Medicine</option><option>Obstetrics & Gynaecology</option><option>General Surgery</option><option>Emergency Medicine</option><option>Radiology</option><option>Dermatology</option><option>Psychiatry</option><option>Other</option></select></div><div><label class="form-label">Category of Business</label><div class="grid grid-cols-2 gap-2"><label class="card p-3 cursor-pointer flex items-center gap-2" onclick="selectCategory(this)"><input type="radio" name="category" value="HMO"><div><div class="text-sm font-semibold">HMO</div><div class="text-[10px] text-ink-muted">Health Maintenance Org</div></div></label><label class="card p-3 cursor-pointer flex items-center gap-2" onclick="selectCategory(this)"><input type="radio" name="category" value="Corporate"><div><div class="text-sm font-semibold">Corporate</div><div class="text-[10px] text-ink-muted">Company partnership</div></div></label><label class="card p-3 cursor-pointer flex items-center gap-2 border-brand-300 bg-brand-50" onclick="selectCategory(this)"><input type="radio" name="category" value="Private" checked><div><div class="text-sm font-semibold text-brand-deep">Private</div><div class="text-[10px] text-ink-muted">Self-pay patients</div></div></label><label class="card p-3 cursor-pointer flex items-center gap-2" onclick="selectCategory(this)"><input type="radio" name="category" value="Referral"><div><div class="text-sm font-semibold">Referral</div><div class="text-[10px] text-ink-muted">External referrals</div></div></label></div></div><div><label class="form-label">Team Lead</label><select class="form-input">${ASSOCIATES.map(a=>`<option value="${a.id}">${a.name} — ${role(a.roleId).name}</option>`).join('')}</select></div><div><label class="form-label">Description</label><textarea class="form-input" rows="3" placeholder="Team focus, services offered..."></textarea></div></div><div class="p-4 border-t border-line flex gap-2"><button class="btn btn-ghost flex-1" onclick="closeModal()">Cancel</button><button class="btn btn-primary flex-1" onclick="closeModal();showToast('Team created','people-group')"><i class="fas fa-check text-[11px]"></i> Create Team</button></div></div>`,'560px');}
+function selectCategory(el){el.parentElement.querySelectorAll('.card').forEach(c=>{c.classList.remove('border-brand-300','bg-brand-50');});el.classList.add('border-brand-300','bg-brand-50');el.querySelector('input[type="radio"]').checked=true;}
+
+function openInviteMember(){openModal(`<div class="flex flex-col h-full max-w-md mx-auto"><div class="p-5 border-b border-line flex items-start justify-between"><div><div class="font-display font-bold text-lg">Invite Team Member</div><div class="text-xs text-ink-muted">Send invitation to join ${state.hospitalName}</div></div><button onclick="closeModal()" class="btn btn-ghost p-2"><i class="fas fa-times"></i></button></div><div class="flex-1 overflow-y-auto scroll-area p-5 space-y-3"><div><label class="form-label">Email Address</label><input type="email" class="form-input" placeholder="colleague@hospital.com"></div><div><label class="form-label">Full Name</label><input type="text" class="form-input" placeholder="Dr. ..."></div><div class="grid grid-cols-2 gap-3"><div><label class="form-label">Team</label><select class="form-input">${TEAMS.map(t=>`<option>${t.name}</option>`).join('')}</select></div><div><label class="form-label">Specialty</label><select class="form-input"><option>Cardiology</option><option>Oncology</option><option>Orthopedics</option><option>Neurology</option><option>Pediatrics</option></select></div></div><div><label class="form-label">Role / Access Level</label><div class="space-y-2">${ROLES.map(r=>`<label class="card p-3 cursor-pointer flex items-start gap-3" onclick="selectRole(this)"><input type="radio" name="role" value="${r.id}" class="text-brand-500 mt-1" ${r.id==='associate'?'checked':''}><div class="flex-1"><div class="flex items-center gap-2"><div class="w-7 h-7 rounded-lg ${r.badgeClass} flex items-center justify-center"><i class="fas fa-${r.icon} text-[10px]"></i></div><span class="text-sm font-semibold">${r.name}</span></div><div class="text-[10px] text-ink-muted mt-1">${r.desc}</div></div></label>`).join('')}</div></div></div><div class="p-4 border-t border-line flex gap-2"><button class="btn btn-ghost flex-1" onclick="closeModal()">Cancel</button><button class="btn btn-primary flex-1" onclick="closeModal();showToast('Invitation sent','envelope')"><i class="fas fa-paper-plane text-[11px]"></i> Send Invite</button></div></div>`,'480px');}
+function selectRole(el){el.parentElement.querySelectorAll('.card').forEach(c=>{c.classList.remove('border-brand-300','bg-brand-50');});el.classList.add('border-brand-300','bg-brand-50');el.querySelector('input[type="radio"]').checked=true;}
+
+function openImportFromSheets(){openModal(`<div class="flex flex-col h-full max-w-2xl mx-auto"><div class="p-5 border-b border-line flex items-start justify-between"><div><div class="font-display font-bold text-lg">Import from Google Sheets</div><div class="text-xs text-ink-muted">Upload CSV/XLSX or connect a Sheet URL</div></div><button onclick="closeModal()" class="btn btn-ghost p-2"><i class="fas fa-times"></i></button></div><div class="flex-1 overflow-y-auto scroll-area p-5 space-y-4"><div class="upload-zone" onclick="showToast('File picker opened','folder')"><i class="fas fa-cloud-arrow-up text-3xl text-brand-500 mb-2"></i><div class="font-semibold text-sm">Drop your CSV or Excel file here</div><div class="text-xs text-ink-muted mt-1">or click to browse · Max 10MB</div></div><div class="card p-4"><div class="font-semibold text-sm mb-3">Column Mapping</div><div class="space-y-2 text-xs"><div class="flex items-center gap-2"><div class="w-32 text-ink-muted">Name</div><select class="form-input flex-1 py-1.5 text-xs"><option>Column A</option></select></div><div class="flex items-center gap-2"><div class="w-32 text-ink-muted">Phone</div><select class="form-input flex-1 py-1.5 text-xs"><option>Column B</option></select></div></div></div><div class="card p-3 bg-cream-100 space-y-2"><label class="flex items-center gap-2 text-xs"><input type="checkbox" checked class="rounded"> Skip duplicates</label><label class="flex items-center gap-2 text-xs"><input type="checkbox" checked class="rounded"> Auto-assign owner</label></div></div><div class="p-4 border-t border-line flex gap-2"><button class="btn btn-ghost flex-1" onclick="closeModal()">Cancel</button><button class="btn btn-primary flex-1" onclick="closeModal();showToast('Import started','sync')"><i class="fas fa-file-import text-[11px]"></i> Import</button></div></div>`,'720px');}
+
+function openNewDeal(){openModal(`<div class="flex flex-col h-full max-w-xl mx-auto"><div class="p-5 border-b border-line flex items-start justify-between"><div><div class="font-display font-bold text-lg">New Deal</div><div class="text-xs text-ink-muted">Add to sales pipeline</div></div><button onclick="closeModal()" class="btn btn-ghost p-2"><i class="fas fa-times"></i></button></div><div class="flex-1 overflow-y-auto scroll-area p-5 space-y-3"><div><label class="form-label">Deal / Patient Name</label><input type="text" class="form-input" placeholder="Patient or company name"></div><div class="grid grid-cols-2 gap-3"><div><label class="form-label">Stage</label><select class="form-input">${PIPELINE_STAGES.map(s=>`<option>${s.name}</option>`).join('')}</select></div><div><label class="form-label">Priority</label><select class="form-input"><option>Low</option><option>Medium</option><option>High</option><option>Urgent</option></select></div><div><label class="form-label">Deal Value (₦)</label><input type="number" class="form-input" placeholder="0"></div><div><label class="form-label">Team</label><select class="form-input">${TEAMS.map(t=>`<option>${t.specialty}</option>`).join('')}</select></div><div><label class="form-label">Owner</label><select class="form-input">${ASSOCIATES.map(a=>`<option>${a.name}</option>`).join('')}</select></div><div><label class="form-label">Close Date</label><input type="date" class="form-input"></div></div></div><div class="p-4 border-t border-line flex gap-2"><button class="btn btn-ghost flex-1" onclick="closeModal()">Cancel</button><button class="btn btn-primary flex-1" onclick="closeModal();showToast('Deal added','handshake')"><i class="fas fa-plus text-[11px]"></i> Create</button></div></div>`,'640px');}
+
+function openExportOptions(module){openModal(`<div class="flex flex-col h-full max-w-md mx-auto"><div class="p-5 border-b border-line flex items-start justify-between"><div><div class="font-display font-bold text-lg">Export ${module}</div><div class="text-xs text-ink-muted">Choose format</div></div><button onclick="closeModal()" class="btn btn-ghost p-2"><i class="fas fa-times"></i></button></div><div class="flex-1 overflow-y-auto scroll-area p-5 space-y-4"><div><label class="form-label">File Format</label><div class="grid grid-cols-2 gap-2"><label class="card p-3 cursor-pointer flex items-center gap-2"><input type="radio" name="fmt" checked class="text-brand-500"><i class="fas fa-file-csv text-amber-500"></i><span class="text-xs font-semibold">CSV</span></label><label class="card p-3 cursor-pointer flex items-center gap-2"><input type="radio" name="fmt" class="text-brand-500"><i class="fas fa-file-excel text-green-500"></i><span class="text-xs font-semibold">Excel</span></label><label class="card p-3 cursor-pointer flex items-center gap-2"><input type="radio" name="fmt" class="text-brand-500"><i class="fas fa-file-pdf text-red-500"></i><span class="text-xs font-semibold">PDF</span></label><label class="card p-3 cursor-pointer flex items-center gap-2"><input type="radio" name="fmt" class="text-brand-500"><i class="fas fa-file-code text-sky-500"></i><span class="text-xs font-semibold">JSON</span></label></div></div><div><label class="form-label">Date Range</label><select class="form-input"><option>All time</option><option>Last 7 days</option><option>Last 30 days</option></select></div></div><div class="p-4 border-t border-line flex gap-2"><button class="btn btn-ghost flex-1" onclick="closeModal()">Cancel</button><button class="btn btn-primary flex-1" onclick="closeModal();downloadExport('${module}')"><i class="fas fa-download text-[11px]"></i> Export</button></div></div>`,'480px');}
+function downloadExport(module){let csv='Name,Type,Stage,Phone,Email,Value,Consent\n';PATIENTS.forEach(p=>{csv+=`${p.name},${p.type},${p.stage},${p.phone},${p.email},${p.value},${p.consent}\n`;});const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`twc-${module}-${Date.now()}.csv`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast('Exported as CSV','download');}
+
+function openNewCampaign(){renderCampaignWizard(1);}
+function renderCampaignWizard(step){const steps=['Basics','Audience','Message','Schedule','Review'];const stepHTML=steps.map((s,i)=>{const cls=i+1<step?'done':(i+1===step?'active':'');return `<div class="step-dot ${cls}">${i+1<step?'<i class="fas fa-check text-[10px]"></i>':i+1}</div>${i<steps.length-1?`<div class="step-line ${i+1<step?'done':''}"></div>`:''}`;}).join('');let body='';if(step===1){body=`<div class="space-y-3"><div><label class="form-label">Campaign Name</label><input type="text" class="form-input" placeholder="e.g. World Heart Day"></div><div class="grid grid-cols-2 gap-3"><div><label class="form-label">Channel</label><select class="form-input"><option>WhatsApp Broadcast</option><option>Email</option><option>SMS</option></select></div><div><label class="form-label">Team</label><select class="form-input">${TEAMS.map(t=>`<option>${t.name}</option>`).join('')}</select></div></div></div>`;}else if(step===2){body=`<div class="space-y-3"><div><label class="form-label">Target Segment</label><select class="form-input"><option>All patients (248)</option><option>Cardiology (52)</option></select></div><div class="card p-3 bg-brand-50 border-brand-200"><div class="flex items-center justify-between"><div class="text-sm font-semibold text-brand-deep">Reach: 142</div><div class="text-[10px] text-ink-soft">Consented only</div></div></div></div>`;}else if(step===3){body=`<div class="space-y-3"><div><label class="form-label">Template</label><select class="form-input"><option>Custom</option>${TEMPLATES.map(t=>`<option>${t.name}</option>`).join('')}</select></div><div><label class="form-label">Message</label><textarea class="form-input" rows="5">Hello {{name}}, we're excited to invite you.</textarea></div><div class="flex gap-1.5"><button class="chip text-[10px]" onclick="insertVar('name')">{{name}}</button><button class="chip text-[10px]" onclick="insertVar('hospital')">{{hospital}}</button></div></div>`;}else if(step===4){body=`<div class="space-y-3"><div class="grid grid-cols-2 gap-3"><div><label class="form-label">Start Date</label><input type="date" class="form-input"></div><div><label class="form-label">End Date</label><input type="date" class="form-input"></div></div><div><label class="form-label">Budget (₦)</label><input type="number" class="form-input" placeholder="500000"></div></div>`;}else{body=`<div class="space-y-3"><div class="card p-4 bg-gradient-to-br from-brand-deep to-brand-700 text-white border-0"><div class="font-display font-bold text-xl">World Heart Day</div></div><div class="grid grid-cols-2 gap-3"><div class="card p-3"><div class="text-[10px] uppercase font-bold text-ink-muted">Channel</div><div class="text-sm mt-1">WhatsApp</div></div><div class="card p-3"><div class="text-[10px] uppercase font-bold text-ink-muted">Reach</div><div class="text-sm mt-1 font-bold text-brand-deep">142</div></div></div></div>`;}openModal(`<div class="flex flex-col h-full max-w-2xl mx-auto"><div class="p-5 border-b border-line"><div class="flex items-start justify-between mb-4"><div><div class="font-display font-bold text-lg">New Campaign</div><div class="text-xs text-ink-muted">Step ${step} of 5 · ${steps[step-1]}</div></div><button onclick="closeModal()" class="btn btn-ghost p-2"><i class="fas fa-times"></i></button></div><div class="flex items-center gap-1">${stepHTML}</div></div><div class="flex-1 overflow-y-auto scroll-area p-5">${body}</div><div class="p-4 border-t border-line flex gap-2">${step>1?`<button class="btn btn-ghost flex-1" onclick="renderCampaignWizard(${step-1})"><i class="fas fa-arrow-left text-[11px]"></i> Back</button>`:''}${step<5?`<button class="btn btn-primary flex-1" onclick="renderCampaignWizard(${step+1})">Next</button>`:`<button class="btn btn-primary flex-1" onclick="closeModal();showToast('Campaign launched','bullhorn')"><i class="fas fa-rocket text-[11px]"></i> Launch</button>`}</div></div>`,'720px');}
+function insertVar(name){const ta=document.querySelector('.modal-panel textarea');if(ta){const cp=ta.selectionStart;ta.value=ta.value.substring(0,cp)+`{{${name}}}`+ta.value.substring(cp);ta.focus();}}
+
+function openNewTicket(){openModal(`<div class="flex flex-col h-full max-w-xl mx-auto"><div class="p-5 border-b border-line flex items-start justify-between"><div><div class="font-display font-bold text-lg">New Support Ticket</div><div class="text-xs text-ink-muted">Create a patient service request</div></div><button onclick="closeModal()" class="btn btn-ghost p-2"><i class="fas fa-times"></i></button></div><div class="flex-1 overflow-y-auto scroll-area p-5 space-y-3"><div><label class="form-label">Subject</label><input type="text" class="form-input" placeholder="Brief description"></div><div class="grid grid-cols-2 gap-3"><div><label class="form-label">Patient</label><input type="text" class="form-input" placeholder="Search patient"></div><div><label class="form-label">Channel</label><select class="form-input"><option>WhatsApp</option><option>Email</option><option>Phone</option></select></div><div><label class="form-label">Priority</label><select class="form-input"><option>Low</option><option>Medium</option><option>High</option><option>Urgent</option></select></div><div><label class="form-label">Category</label><select class="form-input"><option>Appointment</option><option>Billing</option><option>Records</option><option>Clinical</option></select></div></div><div><label class="form-label">Description</label><textarea class="form-input" rows="4" placeholder="Detailed description..."></textarea></div><div><label class="form-label">Assign To</label><select class="form-input">${ASSOCIATES.map(a=>`<option>${a.name}</option>`).join('')}</select></div></div><div class="p-4 border-t border-line flex gap-2"><button class="btn btn-ghost flex-1" onclick="closeModal()">Cancel</button><button class="btn btn-primary flex-1" onclick="closeModal();showToast('Ticket created','ticket')"><i class="fas fa-plus text-[11px]"></i> Create</button></div></div>`,'640px');}
+
+function openNewTemplate(){openModal(`<div class="flex flex-col h-full max-w-2xl mx-auto"><div class="p-5 border-b border-line flex items-start justify-between"><div><div class="font-display font-bold text-lg">New Template</div><div class="text-xs text-ink-muted">Create a reusable message template</div></div><button onclick="closeModal()" class="btn btn-ghost p-2"><i class="fas fa-times"></i></button></div><div class="flex-1 overflow-y-auto scroll-area p-5 space-y-3"><div class="grid grid-cols-2 gap-3"><div><label class="form-label">Template Name</label><input type="text" class="form-input" placeholder="e.g. Appointment Reminder"></div><div><label class="form-label">Category</label><select class="form-input"><option>Onboarding</option><option>Scheduling</option><option>Billing</option><option>Care</option></select></div><div><label class="form-label">Channel</label><select class="form-input"><option>WhatsApp</option><option>Email</option><option>SMS</option></select></div><div><label class="form-label">Language</label><select class="form-input"><option>English</option><option>Pidgin</option><option>Yoruba</option><option>Hausa</option><option>Igbo</option></select></div></div><div><label class="form-label">Message Body</label><div class="flex flex-wrap gap-1.5 mb-2"><button class="chip text-[10px]" onclick="insertVar('name')">{{name}}</button><button class="chip text-[10px]" onclick="insertVar('hospital')">{{hospital}}</button><button class="chip text-[10px]" onclick="insertVar('date')">{{date}}</button><button class="chip text-[10px]" onclick="insertVar('time')">{{time}}</button><button class="chip text-[10px]" onclick="insertVar('doctor')">{{doctor}}</button></div><textarea class="form-input" rows="6" placeholder="Type your template here..."></textarea></div><div class="card p-3 bg-amber-50 border-amber-200"><div class="text-xs font-semibold text-amber-700"><i class="fas fa-info-circle"></i> WhatsApp templates require Meta approval (12-24h).</div></div></div><div class="p-4 border-t border-line flex gap-2"><button class="btn btn-ghost flex-1" onclick="closeModal()">Cancel</button><button class="btn btn-primary flex-1" onclick="closeModal();showToast('Template created','file-lines')"><i class="fas fa-check text-[11px]"></i> Save</button></div></div>`,'720px');}
+
+function openNewRule(){openModal(`<div class="flex flex-col h-full max-w-2xl mx-auto"><div class="p-5 border-b border-line flex items-start justify-between"><div><div class="font-display font-bold text-lg">New Automation Rule</div><div class="text-xs text-ink-muted">Build a trigger → action workflow</div></div><button onclick="closeModal()" class="btn btn-ghost p-2"><i class="fas fa-times"></i></button></div><div class="flex-1 overflow-y-auto scroll-area p-5 space-y-4"><div><label class="form-label">Rule Name</label><input type="text" class="form-input" placeholder="e.g. Welcome new lead"></div><div class="rule-block trigger"><div class="flex items-center gap-2 mb-2"><div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center"><i class="fas fa-bolt"></i></div><div class="font-semibold text-sm">When (Trigger)</div></div><select class="form-input"><option>New contact created</option><option>Deal moved to stage</option><option>After consultation +N days</option><option>Ticket open > N hours</option><option>Patient DOB == today</option><option>Deal moved to Won</option><option>New referral logged</option></select></div><div class="rule-block condition"><div class="flex items-center gap-2 mb-2"><div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center"><i class="fas fa-filter"></i></div><div class="font-semibold text-sm">If (Condition) — optional</div></div><div class="flex gap-2 items-center"><select class="form-input flex-1 py-1.5 text-xs"><option>Team</option><option>Stage</option><option>Value</option></select><select class="form-input w-24 py-1.5 text-xs"><option>equals</option><option>contains</option></select><input type="text" class="form-input flex-1 py-1.5 text-xs" placeholder="value"></div></div><div class="rule-block action"><div class="flex items-center gap-2 mb-2"><div class="w-8 h-8 rounded-lg bg-brand-50 text-brand-deep flex items-center justify-center"><i class="fas fa-arrow-right"></i></div><div class="font-semibold text-sm">Then (Action)</div></div><select class="form-input"><option>Send WhatsApp template</option><option>Send email via Gmail</option><option>Create task</option><option>Move deal to stage</option><option>Escalate to team lead</option><option>Generate invoice in Sheets</option></select></div></div><div class="p-4 border-t border-line flex gap-2"><button class="btn btn-ghost flex-1" onclick="closeModal()">Cancel</button><button class="btn btn-primary flex-1" onclick="closeModal();showToast('Rule created','robot')"><i class="fas fa-rocket text-[11px]"></i> Save & Activate</button></div></div>`,'720px');}
+
+function openDownloadReport(){openModal(`<div class="flex flex-col h-full max-w-md mx-auto"><div class="p-5 border-b border-line flex items-start justify-between"><div><div class="font-display font-bold text-lg">Download NDPA Report</div><div class="text-xs text-ink-muted">Compliance audit document</div></div><button onclick="closeModal()" class="btn btn-ghost p-2"><i class="fas fa-times"></i></button></div><div class="flex-1 overflow-y-auto scroll-area p-5 space-y-4"><div class="card p-4 bg-gradient-to-br from-brand-deep to-brand-700 text-white border-0"><div class="flex items-center gap-3"><div class="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center"><i class="fas fa-shield-heart text-xl text-brand-300"></i></div><div><div class="text-[10px] uppercase font-bold text-brand-200">Score</div><div class="font-display font-extrabold text-2xl">98%</div></div></div></div><div><label class="form-label">Report Format</label><div class="grid grid-cols-1 gap-2"><label class="card p-3 cursor-pointer flex items-center gap-3"><input type="radio" name="rfmt" checked class="text-brand-500"><i class="fas fa-file-pdf text-red-500 text-lg"></i><div><div class="text-sm font-semibold">PDF Report</div><div class="text-[10px] text-ink-muted">Full compliance audit</div></div></label><label class="card p-3 cursor-pointer flex items-center gap-3"><input type="radio" name="rfmt" class="text-brand-500"><i class="fas fa-file-csv text-amber-500 text-lg"></i><div><div class="text-sm font-semibold">CSV Export</div><div class="text-[10px] text-ink-muted">Raw consent records</div></div></label></div></div></div><div class="p-4 border-t border-line flex gap-2"><button class="btn btn-ghost flex-1" onclick="closeModal()">Cancel</button><button class="btn btn-primary flex-1" onclick="closeModal();downloadNDPAReport()"><i class="fas fa-download text-[11px]"></i> Download</button></div></div>`,'480px');}
+function downloadNDPAReport(){const report=`TWC MedCRM — NDPA Compliance Report\nHospital: ${state.hospitalName}\nGenerated: ${new Date().toLocaleString('en-NG')}\n\nCOMPLIANCE SCORE: 98%\n\nConsent: 248/251 (98.8%)\nBreaches: 0\n\nSTATUS: FULLY COMPLIANT with NDPA 2023`;const blob=new Blob([report],{type:'text/plain'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`NDRA-${new Date().toISOString().split('T')[0]}.txt`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast('Report downloaded','download');}
+
+function openIntegrationConfig(id){const i=INTEGRATIONS.find(x=>x.id===id);if(!i)return;openModal(`<div class="flex flex-col h-full max-w-md mx-auto"><div class="p-5 border-b border-line flex items-start justify-between"><div class="flex items-center gap-3"><div class="w-11 h-11 rounded-xl ${i.color==='green'?'bg-green-50 text-green-600':'bg-amber-50 text-amber-600'} flex items-center justify-center"><i class="${i.icon} text-lg"></i></div><div><div class="font-display font-bold text-lg">${i.name}</div><div class="text-xs text-ink-muted">${i.desc}</div></div></div><button onclick="closeModal()" class="btn btn-ghost p-2"><i class="fas fa-times"></i></button></div><div class="flex-1 overflow-y-auto scroll-area p-5 space-y-3"><div class="flex items-center justify-between p-3 rounded-lg bg-cream-100"><div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full ${i.connected?'bg-green-500':'bg-amber-500'}"></div><span class="text-xs font-semibold">${i.connected?'Connected':'Not Connected'}</span></div><div class="toggle ${i.connected?'on':''}" onclick="this.classList.toggle('on');showToast('Toggled','plug')"></div></div><div><label class="form-label">API Key / ID</label><input type="text" class="form-input" placeholder="Enter credentials..."></div><div><label class="form-label">Sync Frequency</label><select class="form-input"><option>Every 5 minutes</option><option>Hourly</option><option>Daily</option></select></div></div><div class="p-4 border-t border-line flex gap-2"><button class="btn btn-ghost flex-1" onclick="closeModal()">Cancel</button><button class="btn btn-ghost flex-1" onclick="showToast('Testing...','plug');setTimeout(()=>showToast('Success','check-circle'),1500)"><i class="fas fa-plug text-[11px]"></i> Test</button><button class="btn btn-primary flex-1" onclick="closeModal();showToast('Saved','sync')">Save</button></div></div>`,'480px');}
+
+function openSettings(){openModal(`<div class="flex flex-col h-full max-w-lg mx-auto"><div class="p-5 border-b border-line flex items-start justify-between"><div><div class="font-display font-bold text-lg">Workspace Settings</div><div class="text-xs text-ink-muted">Configure your hospital workspace</div></div><button onclick="closeModal()" class="btn btn-ghost p-2"><i class="fas fa-times"></i></button></div><div class="flex-1 overflow-y-auto scroll-area p-5 space-y-4"><div class="card p-4 bg-gradient-to-br from-brand-deep to-brand-700 text-white border-0"><div class="flex items-center gap-3"><div class="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center"><img src="${APP_ICON}" alt="TWC" class="w-7 h-7 object-contain"></div><div><div class="text-[10px] uppercase font-bold text-brand-200">Hospital Name</div><div class="font-display font-bold text-lg" id="settingsHospitalPreview">${state.hospitalName}</div></div></div></div><div><label class="form-label">Hospital / Workspace Name</label><input type="text" class="form-input" value="${state.hospitalName}" id="hospitalNameInput" oninput="document.getElementById('settingsHospitalPreview').textContent=this.value"></div><div class="grid grid-cols-2 gap-3"><div><label class="form-label">Initials</label><input type="text" class="form-input" maxlength="3" value="LH" id="workspaceInitialsInput"></div><div><label class="form-label">Members</label><input type="number" class="form-input" value="24" readonly></div></div><div><label class="form-label">Timezone</label><select class="form-input"><option>(GMT+1) Lagos · WAT</option><option>(GMT+0) UTC</option></select></div><div><label class="form-label">Currency</label><select class="form-input"><option>₦ NGN — Nigerian Naira</option><option>$ USD</option></select></div></div><div class="p-4 border-t border-line flex gap-2"><button class="btn btn-ghost flex-1" onclick="closeModal()">Cancel</button><button class="btn btn-primary flex-1" onclick="saveSettings()"><i class="fas fa-check text-[11px]"></i> Save</button></div></div>`,'560px');}
+function saveSettings(){const ni=document.getElementById('hospitalNameInput');const ii=document.getElementById('workspaceInitialsInput');if(ni){state.hospitalName=ni.value||'Lagos Health Network';const wn=document.getElementById('workspaceName');const wi=document.getElementById('workspaceInitials');if(wn)wn.textContent=state.hospitalName;if(wi&&ii)wi.textContent=ii.value||'LH';}closeModal();showToast('Settings saved','check-circle');}
+
+/* ===== MINI APPS ===== */
+function openTriage(){showToast('Opening Triage','clipboard-list');openModal(`<div class="p-8 text-center max-w-md mx-auto"><i class="fas fa-clipboard-list text-4xl text-brand-500 mb-3"></i><div class="font-display font-bold text-lg">Triage Intake</div><p class="text-xs text-ink-muted mt-2">Pre-consultation intake form.</p><button class="btn btn-primary mt-4" onclick="closeModal()">Start</button></div>`,'420px');}
+function openVitals(){showToast('Opening Vitals','heart-pulse');openModal(`<div class="p-8 text-center max-w-md mx-auto"><i class="fas fa-heart-pulse text-4xl text-accent mb-3"></i><div class="font-display font-bold text-lg">Vitals Capture</div><button class="btn btn-primary mt-4" onclick="closeModal()">Start</button></div>`,'420px');}
+function openPrescription(){showToast('Opening e-Prescription','prescription-bottle-medical');openModal(`<div class="p-8 text-center max-w-md mx-auto"><i class="fas fa-prescription-bottle-medical text-4xl text-amber-500 mb-3"></i><div class="font-display font-bold text-lg">e-Prescription</div><button class="btn btn-primary mt-4" onclick="closeModal()">New</button></div>`,'420px');}
+function openLab(){showToast('Opening Lab Results','flask-vial');openModal(`<div class="p-8 text-center max-w-md mx-auto"><i class="fas fa-flask-vial text-4xl text-green-500 mb-3"></i><div class="font-display font-bold text-lg">Lab Results</div><button class="btn btn-primary mt-4" onclick="closeModal()">Upload</button></div>`,'420px');}
+function openInsurance(){showToast('Opening Insurance','shield-heart');openModal(`<div class="p-8 text-center max-w-md mx-auto"><i class="fas fa-shield-heart text-4xl text-brand-500 mb-3"></i><div class="font-display font-bold text-lg">Insurance Verification</div><button class="btn btn-primary mt-4" onclick="closeModal()">Verify</button></div>`,'420px');}
+function openSurgery(){showToast('Opening Surgery Booking','syringe');openModal(`<div class="p-8 text-center max-w-md mx-auto"><i class="fas fa-syringe text-4xl text-accent mb-3"></i><div class="font-display font-bold text-lg">Surgery Booking</div><button class="btn btn-primary mt-4" onclick="closeModal()">Book</button></div>`,'420px');}
+
+function toggleAutomation(id,el){el.classList.toggle('on');showToast(`Automation ${el.classList.contains('on')?'enabled':'paused'}`,'robot');}
+
+/* ===== SIDEBAR ===== */
+ $('#sidebarBackdrop').addEventListener('click',()=>{$('#sidebar').classList.remove('open');$('#sidebarBackdrop').classList.remove('open');});
+ $$('.nav-item').forEach(n=>n.addEventListener('click',()=>nav(n.dataset.view)));
+
+/* ===== BOOT ===== */
+function boot(){renderFilterOptions();setupDropdowns();renderView();setTimeout(()=>{$('#splash').classList.add('hide');},800);}
+boot();
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();$('#globalSearch')?.focus();}});
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js');
+  }
+</script>
+
+</body>
+</html>
