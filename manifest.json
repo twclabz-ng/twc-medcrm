@@ -1,0 +1,32 @@
+{
+  "name": "TWC MedCRM — Healthcare CRM",
+  "short_name": "TWC MedCRM",
+  "description": "Healthcare CRM for hospital teams. Powered by Google Workspace.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0F3D3E",
+  "theme_color": "#0F3D3E",
+  "categories": ["medical", "health", "productivity", "business"],
+  "icons": [
+    {
+      "src": "https://z-cdn-media.chatglm.cn/files/b294a7ca-ad32-4be0-a147-19aa28af5078.png?auth_key=1889621395-f649c186eee949069893bf2995acc1fe-0-15a8bdc6fd0ed2cba61685baf2f94a5a",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://z-cdn-media.chatglm.cn/files/b294a7ca-ad32-4be0-a147-19aa28af5078.png?auth_key=1889621395-f649c186eee949069893bf2995acc1fe-0-15a8bdc6fd0ed2cba61685baf2f94a5a",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://z-cdn-media.chatglm.cn/files/b294a7ca-ad32-4be0-a147-19aa28af5078.png?auth_key=1889621395-f649c186eee949069893bf2995acc1fe-0-15a8bdc6fd0ed2cba61685baf2f94a5a",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

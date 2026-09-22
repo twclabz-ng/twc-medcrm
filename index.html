@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+<meta name="theme-color" content="#0F3D3E">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TWC MedCRM">
+<meta name="description" content="TWC MedCRM — Healthcare CRM">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="https://z-cdn-media.chatglm.cn/files/b294a7ca-ad32-4be0-a147-19aa28af5078.png?auth_key=1889621395-f649c186eee949069893bf2995acc1fe-0-15a8bdc6fd0ed2cba61685baf2f94a5a">
+<link rel="icon" type="image/png" sizes="512x512" href="https://z-cdn-media.chatglm.cn/files/b294a7ca-ad32-4be0-a147-19aa28af5078.png?auth_key=1889621395-f649c186eee949069893bf2995acc1fe-0-15a8bdc6fd0ed2cba61685baf2f94a5a">
+<link rel="apple-touch-icon" href="https://z-cdn-media.chatglm.cn/files/b294a7ca-ad32-4be0-a147-19aa28af5078.png?auth_key=1889621395-f649c186eee949069893bf2995acc1fe-0-15a8bdc6fd0ed2cba61685baf2f94a5a">
+<title>TWC MedCRM</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{width:100%;height:100%;height:100dvh;overflow:hidden;background:#0F3D3E}
+  #splash{position:fixed;inset:0;z-index:9999;background:radial-gradient(circle at 30% 20%,#1a5a5a 0%,#0F3D3E 40%,#07292a 100%);display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity .5s}
+  #splash.hide{opacity:0;pointer-events:none}
+  .logo{width:80px;height:80px;border-radius:20px;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.18);display:flex;align-items:center;justify-content:center;animation:pulse 2.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(20,184,166,0.4)}50%{transform:scale(1.04);box-shadow:0 0 0 16px rgba(20,184,166,0)}}
+  .logo img{width:44px;height:44px;object-fit:contain}
+  .title{color:#fff;font-family:'Segoe UI',system-ui,sans-serif;font-weight:800;font-size:20px;margin-top:16px;letter-spacing:-0.02em}
+  .sub{color:rgba(255,255,255,0.5);font-size:11px;margin-top:4px;font-family:'Segoe UI',system-ui,sans-serif}
+  .bar{width:180px;height:3px;margin-top:18px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden}
+  .bar::after{content:'';display:block;height:100%;width:40%;background:linear-gradient(90deg,transparent,#14B8A6,transparent);animation:load 1.2s ease-in-out infinite}
+  @keyframes load{0%{transform:translateX(-100%)}100%{transform:translateX(350%)}}
+  #frame{width:100%;height:100%;border:none;display:none}
+  #installBtn{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9998;background:#14B8A6;color:#fff;border:none;padding:12px 28px;border-radius:12px;font-size:14px;font-weight:700;font-family:'Segoe UI',system-ui,sans-serif;cursor:pointer;display:none;box-shadow:0 8px 24px rgba(20,184,166,0.4)}
+  #installBtn:active{transform:translateX(-50%) scale(0.95)}
+  #errBox{position:fixed;inset:0;z-index:9999;background:#0F3D3E;color:#fff;display:none;align-items:center;justify-content:center;flex-direction:column;padding:32px;text-align:center;font-family:'Segoe UI',system-ui,sans-serif}
+  #errBox a{color:#14B8A6;font-weight:700;text-decoration:underline;margin-top:12px}
+</style>
+</head>
+<body>
+
+<div id="splash">
+  <div class="logo">
+    <img src="https://z-cdn-media.chatglm.cn/files/b294a7ca-ad32-4be0-a147-19aa28af5078.png?auth_key=1889621395-f649c186eee949069893bf2995acc1fe-0-15a8bdc6fd0ed2cba61685baf2f94a5a" alt="TWC">
+  </div>
+  <div class="title">TWC MedCRM</div>
+  <div class="sub">Healthcare CRM · Powered by Google Workspace</div>
+  <div class="bar"></div>
+</div>
+
+<iframe id="frame" src="https://script.google.com/macros/s/AKfycbzACE9rIT6YH_nhKkTBFcUVhpuYiJSzv_e_9gPf15OtT8tDc3zJO4W5qQYerglVtJBt/exec"></iframe>
+
+<button id="installBtn">📱 Install App</button>
+
+<div id="errBox">
+  <div style="font-size:48px;margin-bottom:16px">📋</div>
+  <div style="font-size:18px;font-weight:700;margin-bottom:8px">Connection Issue</div>
+  <div style="font-size:13px;color:rgba(255,255,255,0.6);max-width:300px">If the app doesn't load automatically, tap the button below to open it directly.</div>
+  <a id="errLink" href="https://script.google.com/macros/s/AKfycbzACE9rIT6YH_nhKkTBFcUVhpuYiJSzv_e_9gPf15OtT8tDc3zJO4W5qQYerglVtJBt/exec">Open TWC MedCRM →</a>
+</div>
+
+<script>
+var GAS_URL='https://script.google.com/macros/s/AKfycbzACE9rIT6YH_nhKkTBFcUVhpuYiJSzv_e_9gPf15OtT8tDc3zJO4W5qQYerglVtJBt/exec';
+var splash=document.getElementById('splash');
+var frame=document.getElementById('frame');
+var errBox=document.getElementById('errBox');
+
+frame.src=GAS_URL;
+
+frame.addEventListener('load',function(){
+  setTimeout(function(){
+    splash.classList.add('hide');
+    frame.style.display='block';
+  },300);
+});
+
+setTimeout(function(){
+  splash.classList.add('hide');
+  frame.style.display='block';
+},5000);
+
+setTimeout(function(){
+  if(frame.style.display==='none'){
+    errBox.style.display='flex';
+  }
+},10000);
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').catch(function(err){
+    console.log('SW registration failed:',err);
+  });
+}
+
+var deferredPrompt=null;
+var installBtn=document.getElementById('installBtn');
+
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault();
+  deferredPrompt=e;
+  installBtn.style.display='block';
+});
+
+installBtn.addEventListener('click',function(){
+  if(deferredPrompt){
+    installBtn.style.display='none';
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(){
+      deferredPrompt=null;
+    });
+  }
+});
+
+window.addEventListener('appinstalled',function(){
+  installBtn.style.display='none';
+});
+</script>
+</body>
+</html>
