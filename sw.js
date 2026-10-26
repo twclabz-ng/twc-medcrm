@@ -1,47 +1,47 @@
-const CACHE_NAME = 'twc-medcrm-v2';
-const ASSETS = ['./', './index.html', './manifest.json'];
+// TWC MedCRM Service Worker for PWA
+const CACHE_NAME = 'twc-medcrm-v1';
+const ASSETS_TO_CACHE = [
+  './',
+  './manifest.json',
+  './logo.png',
+  './favicon.png'
+];
 
-self.addEventListener('install', function(e) {
-  self.skipWaiting();
-  e.waitUntil(
-    caches.open(CACHE_NAME).then(function(cache) {
-      return cache.addAll(ASSETS).catch(function() {});
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(ASSETS_TO_CACHE).catch(() => {});
     })
   );
+  self.skipWaiting();
 });
 
-self.addEventListener('activate', function(e) {
-  e.waitUntil(
-    caches.keys().then(function(names) {
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) => {
       return Promise.all(
-        names.filter(function(n) { return n !== CACHE_NAME; })
-          .map(function(n) { return caches.delete(n); })
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
       );
-    }).then(function() { return self.clients.claim(); })
+    })
   );
+  self.clients.claim();
 });
 
-self.addEventListener('fetch', function(e) {
-  if (e.request.method !== 'GET') return;
-
-  // NEVER cache cross-origin requests (GAS app, CDNs, etc.)
-  var url = new URL(e.request.url);
-  if (url.origin !== self.location.origin) {
-    e.respondWith(fetch(e.request).catch(function() { return new Response(''); }));
-    return;
-  }
-
-  // Network-first for same-origin (wrapper page, manifest)
-  e.respondWith(
-    fetch(e.request).then(function(response) {
-      var clone = response.clone();
-      caches.open(CACHE_NAME).then(function(cache) {
-        cache.put(e.request, clone);
-      });
-      return response;
-    }).catch(function() {
-      return caches.match(e.request).then(function(cached) {
-        return cached || caches.match('./index.html');
+self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+  event.respondWith(
+    caches.match(event.request).then((cachedResponse) => {
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+      return fetch(event.request).catch(() => {
+        if (event.request.mode === 'navigate') {
+          return caches.match('./') || caches.match('./index.html');
+        }
       });
     })
   );
